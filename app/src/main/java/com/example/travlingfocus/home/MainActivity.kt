@@ -7,6 +7,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.VisibleForTesting
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDp
@@ -40,6 +41,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.travlingfocus.ui.theme.TravlingfocusTheme
+import com.example.travlingfocus.ui.theme.YellowLight
 import dagger.hilt.android.AndroidEntryPoint
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -66,6 +68,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// sealed class: class with a fixed number of subclasses
 sealed class Routes(val route: String){
     object Home: Routes("home")
 }
@@ -79,30 +82,38 @@ fun MainScreen(
     mainViewModel: MainViewModel
 )
 {
+// Layout Container
+
+    // region Animation of Surface/splash screen
+    val transitionState = remember { MutableTransitionState(mainViewModel.shownSplash.value) }
+    val transition = updateTransition(transitionState, label = "splashTransition")
+    val splashAlpha by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 100) }, label = "splashAlpha"
+    ) {
+        if (it == SplashState.Shown) 1f else 0f
+    }
+    val contentAlpha by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 300) }, label = "contentAlpha"
+    ) {
+        if (it == SplashState.Shown) 0f else 1f
+    }
+    val contentTopPadding by transition.animateDp(
+        transitionSpec = { spring(stiffness = Spring.StiffnessLow) }, label = "contentTopPadding"
+    ) {
+        if (it == SplashState.Shown) 100.dp else 0.dp
+    }
+    val contentColor by transition.animateColor(
+        transitionSpec = { tween(durationMillis = 300) }, label = "contentColor"
+    ) {
+        if (it == SplashState.Shown) YellowLight else MaterialTheme.colorScheme.primary
+    }
+    // endregion
     Surface(
         modifier = Modifier.windowInsetsPadding(
             WindowInsets.navigationBars.only(WindowInsetsSides.Start + WindowInsetsSides.End)
         ),
-        color =  MaterialTheme.colorScheme.primary
+        color = contentColor
     ) {
-        val transitionState = remember { MutableTransitionState(mainViewModel.shownSplash.value) }
-        val transition = updateTransition(transitionState, label = "splashTransition")
-        val splashAlpha by transition.animateFloat(
-            transitionSpec = { tween(durationMillis = 100) }, label = "splashAlpha"
-        ) {
-            if (it == SplashState.Shown) 1f else 0f
-        }
-        val contentAlpha by transition.animateFloat(
-            transitionSpec = { tween(durationMillis = 300) }, label = "contentAlpha"
-        ) {
-            if (it == SplashState.Shown) 0f else 1f
-        }
-        val contentTopPadding by transition.animateDp(
-            transitionSpec = { spring(stiffness = Spring.StiffnessLow) }, label = "contentTopPadding"
-        ) {
-            if (it == SplashState.Shown) 100.dp else 0.dp
-        }
-
         Box {
             LandingScreen(
                 modifier = Modifier.alpha(splashAlpha),

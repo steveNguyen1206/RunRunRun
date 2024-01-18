@@ -15,5 +15,6 @@ val PinkGray= Color(0xFFE6B9BD)
 val GreenGray= Color(0xFF81A684)
 val GreenLight = Color(0xFF83DC8A)
 
+val YellowLight = Color(0xFFF6F7EC)
 
 
