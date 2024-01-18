@@ -24,7 +24,7 @@ fun LandingScreen(modifier: Modifier = Modifier, onTimeout: () -> Unit) {
         currentOnTimeout()
     }
     Image(
-        painterResource(id = R.drawable.ic_cute_travle),
+        painterResource(id = R.drawable.logo_transparent),
         contentDescription = null,
         modifier
             .fillMaxSize()

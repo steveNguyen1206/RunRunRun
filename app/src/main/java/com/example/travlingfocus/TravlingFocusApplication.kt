@@ -19,4 +19,6 @@ class TravlingFocusApplication : Application(), ImageLoaderFactory {
             }
             .build()
     }
+
+    // Path: app/src/main/java/com/example/travlingfocus/TravlingFocusApplication.kt
 }
