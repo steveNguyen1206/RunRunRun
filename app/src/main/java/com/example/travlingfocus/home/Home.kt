@@ -5,11 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.travlingfocus.composable.MyTab
+import com.example.travlingfocus.composable.MyTabBar
 import com.example.travlingfocus.composable.Timer
 import com.example.travlingfocus.ui.theme.GreenLight
 import com.example.travlingfocus.ui.theme.PinkGray
@@ -74,37 +79,65 @@ fun HomeContent(
     BackdropScaffold(
         modifier = modifier,
         scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed),
+        backLayerBackgroundColor = Color.Transparent,
 //        frontLayerShape = BottomSheetShape,
 //        frontLayerScrimColor = Color.Unspecified,
-        appBar = {},
+        appBar = {
+            HomeTabBar()
+        },
         backLayerContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+//                Text(text = "Back Layer")
+                Timer(
+                    totalTime = 1000L,
+                    handleColor = GreenLight,
+                    activeBarColor = GreenLight,
+                    inactiveBarColor = PinkGray,
+                    modifier = Modifier.size(200.dp)
+                )
+            }
 
         },
-        frontLayerContent = {}) {
+        frontLayerContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Front Layer")
+            }
+        }) {
 
     }
 }
 
 @Composable
 private fun HomeTabBar(
-    openDrawer: () -> Unit,
+//    openDrawer: () -> Unit,
 //    tabSelected: CraneScreen,
 //    onTabSelected: (CraneScreen) -> Unit,
     modifier: Modifier = Modifier
 ){
-    myTabBar(
-        modifier = modifier,
-        openDrawer = openDrawer,
-    )
+    MyTabBar(
+        modifier = modifier
+            .wrapContentWidth()
+            .sizeIn(maxHeight = 500.dp),
+//        onMenuClicked = openDrawer,
+    ){
+        MyTab(it,
+            onTimerClick = {},
+            onStopWatchClick = {})
+
+    }
 }
 
-@Composable
-private  fun myTabBar(
-    modifier: Modifier = Modifier,
-    openDrawer: () -> Unit,
-) {
 
-}
 
 //    Box (
 //        modifier = modifier.fillMaxSize(),
