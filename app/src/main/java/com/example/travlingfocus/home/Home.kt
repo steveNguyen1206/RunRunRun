@@ -141,9 +141,9 @@ private fun HomeTabBar(
 //        onMenuClicked = openDrawer,
     ){
         MyTab(it,
-            onTimerClick = onTimerClick,
-            onStopWatchClick = onStopWatchClick)
-
+            onTimerClick = {},
+            onStopWatchClick = {},
+            onMusicClick = {},)
     }
 }
 

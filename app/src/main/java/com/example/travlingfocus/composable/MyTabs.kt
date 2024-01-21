@@ -14,11 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.travlingfocus.R
@@ -62,7 +67,10 @@ fun MyTab(
     modifier: Modifier = Modifier,
     onTimerClick : () -> Unit,
     onStopWatchClick : () -> Unit,
+    onMusicClick : () -> Unit,
 ) {
+    var isMusicPlaying by remember {  mutableStateOf(false) }
+
     Box(
         modifier = modifier
             .padding(8.dp)
@@ -72,14 +80,19 @@ fun MyTab(
                 RoundedCornerShape(24.dp)
             )
 //           Background is gradient color
-            .background(Brush.linearGradient(
-                colors = listOf(
-                    Color(0xFFD8E2DC),
-                    Color(0x00D9D9D9),
-                )))
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFD8E2DC),
+                        Color(0x00D9D9D9),
+                    )
+                )
+            )
     ) {
         Row(
-            modifier.padding(8.dp).padding(horizontal = 16.dp),
+            modifier
+                .padding(8.dp)
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -101,11 +114,22 @@ fun MyTab(
         }
     }
 
+//   I want to fill with only one width for multiple images
     Image(
         modifier = Modifier
             .padding(16.dp)
-            .padding(4.dp),
-        painter = painterResource(id = R.drawable.ic_music),
-        contentDescription = null
+            .padding(4.dp)
+            .clickable(onClick = {
+                isMusicPlaying = !isMusicPlaying
+                onMusicClick()
+            }),
+        painter = painterResource(id = if(isMusicPlaying == true) R.drawable.ic_music else R.drawable.ic_timmer),
+        contentDescription = null,
+        contentScale = ContentScale.Fit,
     )
+}
+
+@Composable
+fun MyTabReward() {
+
 }
