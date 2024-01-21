@@ -76,6 +76,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
 
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.runtime.livedata)
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
     implementation(libs.volley)
@@ -91,10 +93,12 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation(libs.coil.kt.compose)
+    implementation(libs.coil.kt.gif)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
+
     kapt(libs.hilt.compiler)
     kapt(libs.hilt.ext.compiler)
 

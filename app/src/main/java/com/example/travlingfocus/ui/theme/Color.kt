@@ -17,4 +17,7 @@ val GreenLight = Color(0xFF83DC8A)
 
 val YellowLight = Color(0xFFF6F7EC)
 
+val GraySurface = Color(0xFFF5F3F3)
+val GrayText = Color(0xFF9E9E9E)
+
 

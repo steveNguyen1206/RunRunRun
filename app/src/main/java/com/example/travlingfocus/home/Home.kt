@@ -18,6 +18,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +47,10 @@ fun Home (
 //            CraneDrawer()
 //        }
     ){
+
+        var timerState = remember {
+            viewModel.timerState
+        }
         HomeContent(
             modifier = modifier.padding(it),
             widthSize = widthSize,
@@ -76,45 +81,48 @@ fun HomeContent(
 ) {
 
     val coroutineScope = rememberCoroutineScope()
-    BackdropScaffold(
+    Scaffold(
         modifier = modifier,
-        scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed),
-        backLayerBackgroundColor = Color.Transparent,
+        backgroundColor = Color.Transparent,
+//        scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed),
+//        backLayerBackgroundColor = Color.Transparent,
 //        frontLayerShape = BottomSheetShape,
 //        frontLayerScrimColor = Color.Unspecified,
-        appBar = {
-            HomeTabBar()
+        topBar = {
+            HomeTabBar(
+                onTimerClick = {
+                    viewModel.timerState.value = TimerType.Timer
+                },
+                onStopWatchClick = {
+                    viewModel.timerState.value = TimerType.Stopwatch
+                },
+            )
         },
-        backLayerContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-//                Text(text = "Back Layer")
-                Timer(
-                    totalTime = 1000L,
-                    handleColor = GreenLight,
-                    activeBarColor = GreenLight,
-                    inactiveBarColor = PinkGray,
-                    modifier = Modifier.size(200.dp)
-                )
-            }
 
-        },
-        frontLayerContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 200.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Front Layer")
-            }
-        }) {
+        content = {
+            TimerScreen(
+                modifier = Modifier.padding(it),
+                viewModel = viewModel
+            )
 
-    }
+        })
+
+//        backLayerContent = {
+//           TimerScreen(viewModel = viewModel)
+//
+//        },
+//        frontLayerContent = {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .padding(top = 200.dp),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(text = "Front Layer")
+//            }
+//        }) {
+//
+//    }
 }
 
 @Composable
@@ -122,6 +130,8 @@ private fun HomeTabBar(
 //    openDrawer: () -> Unit,
 //    tabSelected: CraneScreen,
 //    onTabSelected: (CraneScreen) -> Unit,
+    onTimerClick: () -> Unit,
+    onStopWatchClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
     MyTabBar(
@@ -131,23 +141,10 @@ private fun HomeTabBar(
 //        onMenuClicked = openDrawer,
     ){
         MyTab(it,
-            onTimerClick = {},
-            onStopWatchClick = {})
+            onTimerClick = onTimerClick,
+            onStopWatchClick = onStopWatchClick)
 
     }
 }
 
 
-
-//    Box (
-//        modifier = modifier.fillMaxSize(),
-//        contentAlignment = Alignment.Center,
-//    ) {
-//        Timer(
-//            totalTime = 1000L,
-//            handleColor = GreenLight,
-//            activeBarColor = GreenLight,
-//            inactiveBarColor = PinkGray,
-//            modifier = Modifier.size(200.dp)
-//        )
-//    }
