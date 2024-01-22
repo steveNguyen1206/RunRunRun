@@ -47,7 +47,10 @@ fun MyTabBar(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         // Separate Row as the children shouldn't have the padding
-        Row(modifier.padding(20.dp)) {
+        Row(
+            Modifier
+                .padding(20.dp)
+        ) {
             Image(
                 modifier = Modifier
                     .clickable(onClick = onMenuClicked),
@@ -60,8 +63,9 @@ fun MyTabBar(
 //                contentDescription = null
 //            )
         }
+
         children(
-            modifier
+            Modifier
                 .align(Alignment.CenterVertically)
         )
     }
@@ -143,24 +147,31 @@ fun MyTab(
 
 @Preview(showBackground = true)
 @Composable
-fun MyTabRewardPreview() {
+fun RewardTabBarPreview() {
     MyTabBar(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ){
-        MyTabReward(modifier = it, hours = 96.7, )
+        MyTabReward(modifier = it, hours = 96.7)
     }
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//fun MyTabRewaredPreview() {
+//    MyTabReward(modifier = Modifier, hours = 96.7)
+//}
 
 @Composable
 fun MyTabReward(
     hours: Double,
-    onShareClick: () -> Unit = {},
     modifier: Modifier = Modifier,
+    onShareClick: () -> Unit = {},
 ) {
-
-    Box(
+    Row(
+        modifier = modifier,
+    ) {
+        Box(
         modifier = modifier
             .padding(8.dp)
             .clip(RoundedCornerShape(24.dp))
@@ -177,7 +188,7 @@ fun MyTabReward(
                     )
                 )
             )
-    ) {
+        ) {
         Text(
             text = hours.toString() + " hours",
             fontSize = MaterialTheme.typography.h4.fontSize,
@@ -189,12 +200,13 @@ fun MyTabReward(
     }
 
 //   I want to fill with only one width for multiple images
-    Image(
-        modifier = Modifier
-            .padding(16.dp)
-            .padding(4.dp),
-        painter = painterResource(id = R.drawable.ico_share),
-        contentDescription = null,
-        contentScale = ContentScale.Fit,
-    )
+        Image(
+            modifier = Modifier
+                .padding(16.dp)
+                .padding(4.dp),
+            painter = painterResource(id = R.drawable.ico_share),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+        )
+    }
 }

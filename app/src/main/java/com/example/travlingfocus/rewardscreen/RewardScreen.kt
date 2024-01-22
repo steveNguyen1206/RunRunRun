@@ -20,18 +20,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.travlingfocus.R
 import com.example.travlingfocus.composable.MyTabBar
 import com.example.travlingfocus.composable.MyTabReward
 import com.example.travlingfocus.home.MainViewModel
+import com.example.travlingfocus.ui.theme.GreenGray
 
 enum class TimeType{
     Day,  Month, Year
 }
 
-//@Preview(showBackground = true, backgroundColor = , showSystemUi =
+@Preview(showBackground = true, backgroundColor = 0xFF81A684)
 @Composable
 fun RewardScreenPreview() {
     RewardScreen(
@@ -53,11 +59,11 @@ fun RewardScreen(
         backgroundColor = MaterialTheme.colorScheme.primary,
         topBar = {
             MyTabBar(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ){
-                MyTabReward(modifier = it, hours = 96.7, )
+                MyTabReward(modifier = it, hours = 96.7)
             }
         },
     ){
@@ -90,7 +96,9 @@ fun RewardContent(
             ,
             contentAlignment = Alignment.Center
         ) {
-            Row {
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     text = viewModel.getTimeString(),
@@ -99,10 +107,14 @@ fun RewardContent(
                     fontWeight = FontWeight.Bold,
                 )
 
-                Spacer(modifier =  Modifier.width(40.dp))
+                Spacer(modifier =  Modifier.width(10.dp))
 
 //                Draw down buttom
-//                Image(painter = , contentDescription = )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_toggle_down),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                )
             }
         }
     }

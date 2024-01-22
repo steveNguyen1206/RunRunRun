@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 // A surface container using the 'background' color from the theme
-                NavHost(navController = navController, startDestination = Routes.Home.route) {
+                NavHost(navController = navController, startDestination = Routes.Reward.route) {
                     composable(Routes.Home.route) {
                         val mainViewModel = hiltViewModel<MainViewModel>()
                         MainScreen(widthSizeClass = widthSizeClass, mainViewModel = mainViewModel)
