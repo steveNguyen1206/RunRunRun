@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,7 +37,7 @@ import com.example.travlingfocus.R
 @Composable
 fun MyTabBar(
     modifier: Modifier = Modifier,
-//    onMenuClicked: () -> Unit,
+    onMenuClicked: () -> Unit = {},
     onTimerClick : () -> Unit = {},
     onStopWatchClick : () -> Unit = {},
     children: @Composable (Modifier) -> Unit
@@ -46,11 +47,10 @@ fun MyTabBar(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         // Separate Row as the children shouldn't have the padding
-        Row(Modifier.padding(16.dp)) {
+        Row(modifier.padding(20.dp)) {
             Image(
                 modifier = Modifier
-                    .padding(4.dp),
-//                    .clickable(onClick = onMenuClicked),
+                    .clickable(onClick = onMenuClicked),
                 painter = painterResource(id = R.drawable.ic_menu),
                 contentDescription = null,
             )
@@ -61,7 +61,7 @@ fun MyTabBar(
 //            )
         }
         children(
-            Modifier
+            modifier
                 .align(Alignment.CenterVertically)
         )
     }
@@ -74,11 +74,10 @@ fun MyTab(
     onStopWatchClick : () -> Unit,
     onMusicClick : () -> Unit,
 ) {
-    var isMusicPlaying by remember {  mutableStateOf(false) }
+    var isMusicPlaying by remember {  mutableStateOf(true) }
 
     Box(
         modifier = modifier
-            .padding(8.dp)
             .clip(RoundedCornerShape(24.dp))
             .border(
                 BorderStroke(1.dp, Color(0xFFA0A0A0)),
@@ -120,19 +119,26 @@ fun MyTab(
     }
 
 //   I want to fill with only one width for multiple images
-    Image(
-        modifier = Modifier
-//            .size(48.dp)
-            .padding(16.dp)
-            .padding(4.dp)
-            .clickable(onClick = {
-                isMusicPlaying = !isMusicPlaying
-                onMusicClick()
-            }),
-        painter = painterResource(id = if(isMusicPlaying == true) R.drawable.ic_music else R.drawable.ic_timmer),
-        contentDescription = null,
-        contentScale = ContentScale.Fit,
-    )
+    Box(
+        modifier
+            .width(70.dp)
+            .height(70.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            modifier = Modifier
+                //            .size(48.dp)
+                .padding(vertical = 16.dp)
+                .padding(vertical = 4.dp)
+                .clickable(onClick = {
+                    isMusicPlaying = !isMusicPlaying
+                    onMusicClick()
+                }),
+            painter = painterResource(id = if (isMusicPlaying == true) R.drawable.ic_music else R.drawable.ic_music_off),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+        )
+    }
 }
 
 @Preview(showBackground = true)
