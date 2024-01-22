@@ -5,6 +5,7 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,9 +25,9 @@ import com.example.travlingfocus.home.MainViewModel
 fun GifImage(
     modifier: Modifier = Modifier,
     data: Int,
-    mysize: coil.size.Size,
+//    mysize: Float,
     mayBeginGifAnimation: Boolean,
-    openButtonSheet: () -> Unit,
+    onGifClick: () -> Unit,
 
 ) {
     var animatable by remember { mutableStateOf<Animatable?>(null) }
@@ -53,7 +54,6 @@ fun GifImage(
     Image(
         painter = rememberAsyncImagePainter(
             ImageRequest.Builder(context).data(data = data).apply(block = {
-                size(mysize)
             }).build(), imageLoader = imageLoader,   onSuccess = { state ->
                 (state.result.drawable as? Animatable)?.let {
                     animatable = it
@@ -61,7 +61,7 @@ fun GifImage(
             },
         ),
         contentDescription = null,
-        modifier = modifier.fillMaxWidth().clickable { openButtonSheet() },
+        modifier = modifier.clickable { onGifClick() },
 
     )
 }

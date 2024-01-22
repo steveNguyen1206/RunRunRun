@@ -19,5 +19,6 @@ val YellowLight = Color(0xFFF6F7EC)
 
 val GraySurface = Color(0xFFF5F3F3)
 val GrayText = Color(0xFF9E9E9E)
+val GrayContainer = Color(0xFFEFEFEF)
 
 

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.draw.shadow
 import com.example.travlingfocus.R
 import com.example.travlingfocus.home.MainViewModel
 import com.example.travlingfocus.home.TimerType
@@ -66,7 +67,7 @@ fun Timer(
     strokeWidth: Dp = 10.dp,
     timerType: TimerType = TimerType.Timer,
     viewModel: MainViewModel,
-    openBottomSheet: () -> Unit,
+    openBottomSheet : () -> Unit
 ) {
     val draggThreshold = (strokeWidth.value * 3 )/(125 * Math.PI) * 180
 
@@ -76,14 +77,17 @@ fun Timer(
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
-    val chosenValue by viewModel.timerValue.observeAsState(60000f)
+    val chosenTime by viewModel.timerValue.observeAsState(60000f)
 
-    var value by remember {
-        mutableStateOf(chosenValue / totalTime)
+    Log.d("chosenTime", chosenTime.toString())
+
+    var value by remember  {
+        mutableStateOf(chosenTime / totalTime)
     }
+    Log.d("value", value.toString())
 
     var currentTime by remember {
-        mutableStateOf(chosenValue)
+        mutableStateOf(chosenTime)
     }
     var isTimerRunning by remember {
         mutableStateOf(false)
@@ -97,10 +101,17 @@ fun Timer(
         mutableStateOf(0f)
     }
 
-    var oldPositionValue by remember {
-        mutableStateOf(chosenValue)
+    var oldPositionTime by remember {
+        mutableStateOf(chosenTime)
     }
 
+    Log.d("oldPositionTime", oldPositionTime.toString())
+
+    LaunchedEffect(key1 = chosenTime, block = {
+        currentTime = chosenTime
+        value = currentTime / totalTime
+        oldPositionTime = currentTime
+    })
 
     LaunchedEffect(key1 = currentTime, key2 = isTimerRunning) {
         if (timerType == TimerType.Timer) {
@@ -162,7 +173,7 @@ fun Timer(
                                         y = center.x - it.x
                                     ) * 180 / Math.PI.toFloat()
                                     dragStartedAngle = (dragStartedAngle).mod(360f)
-//                           Log.d("DragStartedAngle", dragStartedAngle.toString())
+                                    Log.d("DragStartedAngle", dragStartedAngle.toString())
                                 },
                                 onDrag = { change, _ ->
                                     var touchAngle = -atan2(
@@ -170,9 +181,9 @@ fun Timer(
                                         y = center.x - change.position.x
                                     ) * 180 / Math.PI.toFloat()
                                     touchAngle = (touchAngle).mod(360f)
-//                           Log.d("touchAngle", touchAngle.toString())
+                                    Log.d("touchAngle", touchAngle.toString())
 
-                                    val currentAngle = oldPositionValue * 360f / totalTime
+                                    val currentAngle = oldPositionTime * 360f / totalTime
 
                                     if (touchAngle < 90f && value * 360f > 270f) {
                                         touchAngle += 360f
@@ -182,13 +193,18 @@ fun Timer(
                                         touchAngle -= 360f
                                     }
                                     changeAngle = touchAngle - currentAngle
-//                           Log.d("currentAngle", currentAngle.toString())
+                                    Log.d("currentAngle", currentAngle.toString())
 
                                     val lowerThreshold = currentAngle - draggThreshold
                                     val higherThreshold = currentAngle + draggThreshold
 
                                     val newTime =
-                                        (oldPositionValue + (changeAngle / (360f / totalTime)).roundToInt())
+                                        (oldPositionTime + (changeAngle / (360f / totalTime)).roundToInt())
+
+                                    Log.d("Old time", oldPositionTime.toString())
+                                    Log.d("current time", currentTime.toString())
+                                    Log.d("newTime", newTime.toString())
+
 
                                     if (dragStartedAngle in lowerThreshold..higherThreshold &&
                                         (currentTime < totalTime || newTime < currentTime)
@@ -199,12 +215,16 @@ fun Timer(
                                             currentTime += 120000f
                                         else currentTime -= 120000f
                                         value = currentTime / totalTime
-                                        viewModel.updateTimerValue(currentTime)
+//                                        oldPositionTime = currentTime
+//                                        viewModel.updateTimerValue(currentTime)
+
                                     }
 
                                 },
                                 onDragEnd = {
-                                    oldPositionValue = currentTime
+                                    oldPositionTime = currentTime
+                                    viewModel.updateTimerValue(currentTime)
+
 //                           onPositionChange(positionValue)
                                 }
                             )
@@ -245,9 +265,14 @@ fun Timer(
                 }
 
                 GifImage(data = R.drawable.cute_travel_1 ,
-                    mysize = coil.size.Size(250, 250),
+//                    mysize = coil.size.Size(200, 250),
                     mayBeginGifAnimation = isTimerRunning,
-                    openButtonSheet = openBottomSheet
+                    onGifClick = {
+                                      if(!isTimerRunning) {
+                                          openBottomSheet()
+                                      }
+                    },
+                    modifier = Modifier.size(180.dp)
                 )
             }
         }
@@ -276,6 +301,7 @@ fun Timer(
                 border = if (isTimerRunning) BorderStroke(2.dp, Color.White) else null,
                 modifier = Modifier
                     .padding(8.dp, 32.dp)
+                    .shadow(elevation = 9.dp, spotColor = Color.Black, ambientColor = Color.Black, shape = RoundedCornerShape(20.dp))
             )
             {
                 Text(
