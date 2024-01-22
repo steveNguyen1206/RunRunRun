@@ -193,7 +193,7 @@ fun MyTabReward(
         modifier = Modifier
             .padding(16.dp)
             .padding(4.dp),
-        painter = painterResource(id = R.drawable.ic_music),
+        painter = painterResource(id = R.drawable.ico_share),
         contentDescription = null,
         contentScale = ContentScale.Fit,
     )

@@ -40,6 +40,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.travlingfocus.rewardscreen.RewardScreen
+import com.example.travlingfocus.rewardscreen.RewardViewModel
 import com.example.travlingfocus.ui.theme.TravlingfocusTheme
 import com.example.travlingfocus.ui.theme.YellowLight
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,6 +64,10 @@ class MainActivity : ComponentActivity() {
                         val mainViewModel = hiltViewModel<MainViewModel>()
                         MainScreen(widthSizeClass = widthSizeClass, mainViewModel = mainViewModel)
                     }
+                    composable(Routes.Reward.route) {
+                        val rewardViewModel = hiltViewModel<RewardViewModel>()
+                        RewardScreen(widthSize = widthSizeClass, viewModel = rewardViewModel)
+                    }
                 }
             }
         }
@@ -71,6 +77,7 @@ class MainActivity : ComponentActivity() {
 // sealed class: class with a fixed number of subclasses
 sealed class Routes(val route: String){
     object Home: Routes("home")
+    object Reward: Routes("reward")
 }
 
 enum class SplashState { Shown, Completed }
