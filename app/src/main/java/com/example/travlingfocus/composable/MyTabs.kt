@@ -24,7 +24,7 @@ import com.example.travlingfocus.R
 @Composable
 fun MyTabBar(
     modifier: Modifier = Modifier,
-//    onMenuClicked: () -> Unit,
+    onMenuClicked: () -> Unit,
     onTimerClick : () -> Unit = {},
     onStopWatchClick : () -> Unit = {},
     children: @Composable (Modifier) -> Unit
@@ -37,8 +37,8 @@ fun MyTabBar(
         Row(Modifier.padding(16.dp)) {
             Image(
                 modifier = Modifier
-                    .padding(4.dp),
-//                    .clickable(onClick = onMenuClicked),
+                    .padding(4.dp)
+                    .clickable(onClick = onMenuClicked),
                 painter = painterResource(id = R.drawable.ic_menu),
                 contentDescription = null,
             )

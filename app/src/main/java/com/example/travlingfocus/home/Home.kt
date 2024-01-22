@@ -24,11 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.travlingfocus.composable.MainDrawer
 import com.example.travlingfocus.composable.MyTab
 import com.example.travlingfocus.composable.MyTabBar
 import com.example.travlingfocus.composable.Timer
 import com.example.travlingfocus.ui.theme.GreenLight
 import com.example.travlingfocus.ui.theme.PinkGray
+import kotlinx.coroutines.launch
 
 @Composable
 fun Home (
@@ -43,24 +45,29 @@ fun Home (
         scaffoldState = scaffoldState,
         modifier = Modifier.statusBarsPadding(),
         backgroundColor = MaterialTheme.colorScheme.primary,
-//        drawerContent = {
-//            CraneDrawer()
-//        }
+        drawerContent = {
+            MainDrawer(
+                tabClick = {
+                }
+            )
+        }
     ){
 
         var timerState = remember {
             viewModel.timerState
         }
+        val scope = rememberCoroutineScope()
+
         HomeContent(
             modifier = modifier.padding(it),
             widthSize = widthSize,
 //            onExploreItemClicked = onExploreItemClicked,
 //            onDateSelectionClicked = onDateSelectionClicked,
-//            openDrawer = {
-//                scope.launch {
-//                    scaffoldState.drawerState.open()
-//                }
-//            },
+            openDrawer = {
+                scope.launch {
+                    scaffoldState.drawerState.open()
+                }
+            },
             viewModel = viewModel
         )
     }
@@ -75,7 +82,7 @@ fun HomeContent(
     widthSize: WindowWidthSizeClass,
 //    onExploreItemClicked: OnExploreItemClicked,
 //    onDateSelectionClicked: () -> Unit,
-//    openDrawer: () -> Unit,
+    openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel
 ) {
@@ -96,6 +103,7 @@ fun HomeContent(
                 onStopWatchClick = {
                     viewModel.timerState.value = TimerType.Stopwatch
                 },
+                openDrawer = openDrawer,
             )
         },
 
@@ -127,7 +135,7 @@ fun HomeContent(
 
 @Composable
 private fun HomeTabBar(
-//    openDrawer: () -> Unit,
+    openDrawer: () -> Unit,
 //    tabSelected: CraneScreen,
 //    onTabSelected: (CraneScreen) -> Unit,
     onTimerClick: () -> Unit,
@@ -138,7 +146,7 @@ private fun HomeTabBar(
         modifier = modifier
             .wrapContentWidth()
             .sizeIn(maxHeight = 500.dp),
-//        onMenuClicked = openDrawer,
+        onMenuClicked = openDrawer,
     ){
         MyTab(it,
             onTimerClick = onTimerClick,

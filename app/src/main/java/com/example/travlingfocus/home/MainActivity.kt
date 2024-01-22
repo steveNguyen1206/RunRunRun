@@ -71,6 +71,11 @@ class MainActivity : ComponentActivity() {
 // sealed class: class with a fixed number of subclasses
 sealed class Routes(val route: String){
     object Home: Routes("home")
+    object PassPort: Routes("passport")
+    object TimeLine: Routes("timeline")
+    object Ranking: Routes("ranking")
+    object Friend: Routes("friends")
+    object Setting: Routes("setting")
 }
 
 enum class SplashState { Shown, Completed }

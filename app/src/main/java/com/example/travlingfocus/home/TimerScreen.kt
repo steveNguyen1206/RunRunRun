@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -69,6 +70,9 @@ fun TimerScreen (
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
+    var triggerTimerFromOutSize by remember {
+        mutableStateOf(0)
+    }
 
         Timer(
             handleColor = GreenLight,
@@ -79,7 +83,8 @@ fun TimerScreen (
             viewModel = viewModel,
             openBottomSheet = {
                 isSheetOpen = true
-            }
+            },
+            triggerTimerFromOutSize = triggerTimerFromOutSize,
         )
 
     if(isSheetOpen)
@@ -94,113 +99,15 @@ fun TimerScreen (
         ) {
             TravelBottomSheet(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                    .fillMaxSize().windowInsetsPadding(
+                        WindowInsets.navigationBars.only(WindowInsetsSides.Start + WindowInsetsSides.End)
+                    ),
                 viewModel = viewModel,
-
+                travelClick = {
+                    isSheetOpen = false
+                    triggerTimerFromOutSize = ++triggerTimerFromOutSize
+                }
             )
         }
-    }
-}
-
-@Composable
-fun TravelBottomSheet (
-    modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
-)
-{
-    Column(
-        modifier = modifier.padding(top = 24.dp),
-    )
-    {
-        var selectedIndex by remember {
-            mutableStateOf(0)
-        }
-
-        var selectedSouvenirIndex by remember {
-            mutableStateOf(0)
-        }
-
-        Text(
-            text = "Focus Time",
-            fontSize = 18.sp,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 16.dp),
-            fontWeight = FontWeight.Bold
-        )
-
-        SelectRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            list = viewModel.timeOptions,
-            onChose = {
-                viewModel.updateTimerValue(it.toFloat() * 60000)
-                selectedIndex = viewModel.timeOptions.indexOf(it)
-            },
-            selectedIndex = selectedIndex,
-            fontSize = 18,
-            unSelectedBackground = GrayContainer,
-        )
-
-        Text(
-            text = "Tag",
-            fontSize = 18.sp,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 16.dp),
-            fontWeight = FontWeight.Bold
-        )
-
-        SelectRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            list = ActivityTag.values().map{it.name},
-            onChose = {
-                viewModel.tag.value = ActivityTag.valueOf(it)
-            },
-            selectedIndex = viewModel.tag.value.ordinal,
-            fontSize = 16,
-            unSelectedBackground = GrayContainer,
-        )
-
-        Text(
-            text = "Souvenir",
-            fontSize = 18.sp,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 16.dp),
-            fontWeight = FontWeight.Bold
-        )
-        
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(120.dp),
-            content = {
-                items(viewModel.souvenirList.size) { index ->
-                    val souvenir = viewModel.souvenirList[index]
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(20.dp))
-                            .border(
-                                width =  2.dp,
-                                color = if (selectedSouvenirIndex == index) GreenLight else Color.Transparent,
-                                shape = RoundedCornerShape(20.dp)
-                            ).background(MaterialTheme.colorScheme.tertiary),
-                        contentAlignment = Alignment.Center
-                    ) {
-
-                        GifImage(
-                            data = souvenir.imageId,
-                            mayBeginGifAnimation = false,
-                            onGifClick = {
-                                selectedSouvenirIndex = index
-                            },
-                            modifier = Modifier
-                                .fillMaxSize()
-                        )
-                    }
-                }
-            }
-        )
-
     }
 }
