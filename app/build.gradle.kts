@@ -82,6 +82,11 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
     implementation(libs.volley)
 
+//    room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+
 
 //    implementation("androidx.navigation:navigation-compose:2.7.6")
     testImplementation("junit:junit:4.13.2")
