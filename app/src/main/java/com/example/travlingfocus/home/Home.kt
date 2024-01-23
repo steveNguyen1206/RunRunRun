@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Home (
+    navigateToScreenRoute: (String) -> Unit,
     widthSize: WindowWidthSizeClass,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel
@@ -47,8 +48,7 @@ fun Home (
         backgroundColor = MaterialTheme.colorScheme.primary,
         drawerContent = {
             MainDrawer(
-                tabClick = {
-                }
+                navigateToScreenRoute = navigateToScreenRoute,
             )
         }
     ){
@@ -91,10 +91,6 @@ fun HomeContent(
     Scaffold(
         modifier = modifier,
         backgroundColor = Color.Transparent,
-//        scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed),
-//        backLayerBackgroundColor = Color.Transparent,
-//        frontLayerShape = BottomSheetShape,
-//        frontLayerScrimColor = Color.Unspecified,
         topBar = {
             HomeTabBar(
                 onTimerClick = {
@@ -114,23 +110,6 @@ fun HomeContent(
             )
 
         })
-
-//        backLayerContent = {
-//           TimerScreen(viewModel = viewModel)
-//
-//        },
-//        frontLayerContent = {
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(top = 200.dp),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(text = "Front Layer")
-//            }
-//        }) {
-//
-//    }
 }
 
 @Composable
@@ -146,12 +125,12 @@ private fun HomeTabBar(
         modifier = modifier
             .wrapContentWidth()
             .sizeIn(maxHeight = 500.dp),
-        onMenuClicked = openDrawer,
+        onMenuClicked = openDrawer
     ){
-        MyTab(it,
+        MyTab(
             onTimerClick = onTimerClick,
-            onStopWatchClick = onStopWatchClick)
-
+            onStopWatchClick = onStopWatchClick
+        )
     }
 }
 

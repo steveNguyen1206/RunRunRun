@@ -40,6 +40,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.travlingfocus.navigation.RambleNavGraph
+import com.example.travlingfocus.navigation.Routes
 import com.example.travlingfocus.ui.theme.TravlingfocusTheme
 import com.example.travlingfocus.ui.theme.YellowLight
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,25 +59,16 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 // A surface container using the 'background' color from the theme
-                NavHost(navController = navController, startDestination = Routes.Home.route) {
-                    composable(Routes.Home.route) {
-                        val mainViewModel = hiltViewModel<MainViewModel>()
-                        MainScreen(widthSizeClass = widthSizeClass, mainViewModel = mainViewModel)
-                    }
-                }
+//                NavHost(navController = navController, startDestination = Routes.Home.route) {
+//                    composable(Routes.Home.route) {
+//                        val mainViewModel = hiltViewModel<MainViewModel>()
+//                        MainScreen(widthSizeClass = widthSizeClass)
+//                    }
+//                }
+                RambleNavGraph(navController = navController, widthSizeClass = widthSizeClass)
             }
         }
     }
-}
-
-// sealed class: class with a fixed number of subclasses
-sealed class Routes(val route: String){
-    object Home: Routes("home")
-    object PassPort: Routes("passport")
-    object TimeLine: Routes("timeline")
-    object Ranking: Routes("ranking")
-    object Friend: Routes("friends")
-    object Setting: Routes("setting")
 }
 
 enum class SplashState { Shown, Completed }
@@ -83,12 +76,12 @@ enum class SplashState { Shown, Completed }
 @VisibleForTesting
 @Composable
 fun MainScreen(
+    navigateToScreenRoute: (String) -> Unit,
     widthSizeClass: WindowWidthSizeClass,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel = hiltViewModel<MainViewModel>()
 )
 {
 // Layout Container
-
     // region Animation of Surface/splash screen
     val transitionState = remember { MutableTransitionState(mainViewModel.shownSplash.value) }
     val transition = updateTransition(transitionState, label = "splashTransition")
@@ -128,6 +121,7 @@ fun MainScreen(
                 }
             )
             MainContent(
+                navigateToScreenRoute = navigateToScreenRoute,
                 modifier = Modifier.alpha(contentAlpha),
                 topPadding = contentTopPadding,
                 widthSize = widthSizeClass,
@@ -140,6 +134,7 @@ fun MainScreen(
 
 @Composable
 private fun MainContent(
+    navigateToScreenRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
     topPadding: Dp = 0.dp,
     widthSize: WindowWidthSizeClass,
@@ -147,6 +142,11 @@ private fun MainContent(
 ) {
     Column(modifier = modifier) {
         Spacer(Modifier.padding(top = topPadding))
-        Home(widthSize = widthSize, viewModel = viewModel, modifier = modifier)
+        Home(
+            navigateToScreenRoute = navigateToScreenRoute,
+            widthSize = widthSize,
+            viewModel = viewModel,
+            modifier = modifier
+        )
     }
 }

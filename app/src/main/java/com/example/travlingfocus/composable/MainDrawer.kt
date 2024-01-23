@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.travlingfocus.R
-import com.example.travlingfocus.home.Routes
+import com.example.travlingfocus.navigation.Routes
 
 private val screens = listOf (
     Routes.PassPort.route,
@@ -44,8 +44,8 @@ private val screeenIcons = mapOf(
 
 @Composable
 fun MainDrawer(
+    navigateToScreenRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
-    tabClick: () -> Unit,
 ) {
     Scaffold (
        containerColor = MaterialTheme.colorScheme.primary,
@@ -58,9 +58,8 @@ fun MainDrawer(
         }
     ) {
         DrawerContent(
-            modifier = modifier
-                .padding(it).fillMaxWidth(),
-            tabClick = tabClick
+            modifier = modifier.padding(it).fillMaxWidth(),
+            navigateToScreenRoute = navigateToScreenRoute
         )
     }
 
@@ -69,7 +68,7 @@ fun MainDrawer(
 @Composable
 fun DrawerContent(
     modifier: Modifier = Modifier,
-    tabClick: () -> Unit
+    navigateToScreenRoute: (String) -> Unit
 )
 {
     Column (
@@ -80,7 +79,7 @@ fun DrawerContent(
         screens.forEach { screen ->
             DrawerTab(
                 text = screen.replaceFirstChar { it.uppercase() },
-                tabClick = tabClick,
+                tabClick = {navigateToScreenRoute(screen)},
                 icon = screeenIcons[screen] ?: error("No icon for $screen")
             )
         }

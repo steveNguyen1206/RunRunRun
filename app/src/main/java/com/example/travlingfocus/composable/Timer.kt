@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.toSize
 import com.example.travlingfocus.R
 import com.example.travlingfocus.home.ActivityTag
+import com.example.travlingfocus.home.DEFAULT_TIMER_VALUE
 import com.example.travlingfocus.home.MainViewModel
 import com.example.travlingfocus.home.TimerType
 import com.example.travlingfocus.home.TripDetails
@@ -109,14 +110,11 @@ fun Timer(
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
-    val chosenTime by viewModel.timerValue.observeAsState(60000f)
-
-    Log.d("chosenTime", chosenTime.toString())
+    val chosenTime by viewModel.timerValue.observeAsState(DEFAULT_TIMER_VALUE)
 
     var value by remember  {
         mutableStateOf(chosenTime / totalTime)
     }
-    Log.d("value", value.toString())
 
     var currentTime by remember {
         mutableStateOf(chosenTime)
@@ -137,10 +135,7 @@ fun Timer(
         mutableStateOf(chosenTime)
     }
 
-    Log.d("oldPositionTime", oldPositionTime.toString())
-
     LaunchedEffect(key1 = triggerTimerFromOutSize, block = {
-        Log.d("triggerTimerFromOutSize", triggerTimerFromOutSize.toString())
             if(!isTimerRunning && triggerTimerFromOutSize != 0) {
                 isTimerRunning = !isTimerRunning
             }
@@ -213,10 +208,6 @@ fun Timer(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
-//            Text(
-//                text = "Let's get ready to ramble!",
-//
-//            )
             Spacer(modifier = Modifier.height(32.dp))
 
             Box (
@@ -281,19 +272,13 @@ fun Timer(
                                             currentTime += 120000f
                                         else currentTime -= 120000f
                                         value = currentTime / totalTime
-//                                        oldPositionTime = currentTime
-//                                        viewModel.updateTimerValue(currentTime)
-
                                     }
 
                                 },
                                 onDragEnd = {
                                     oldPositionTime = currentTime
                                     viewModel.updateTimerValue(currentTime)
-                                    onTripValueChange(tripDetails.copy(
-                                        duration = currentTime
-                                    ))
-//                           onPositionChange(positionValue)
+                                    onTripValueChange(tripDetails.copy(duration = currentTime))
                                 }
                             )
                         }
@@ -420,22 +405,18 @@ fun Timer(
                         isTimerRunning = !isTimerRunning
                         if(isTimerRunning) {
                             val startTime = Date()
-                            onTripValueChange(
-                                tripDetails.copy(
-                                startTime = startTime, endTime = Date(startTime.time + currentTime.toLong())
-                            ))
-                            Log.d("trip details", tripDetails.toString())
+                            onTripValueChange(tripDetails.copy(startTime = startTime))
+//                            Log.d("trip details", tripDetails.toString())
                         }
                         else {
                             if (chosenTime - currentTime > 10000f)
                             {
-                                Log.d("trip details", tripDetails.toString())
-
-                                onTripValueChange(
-                                    tripDetails.copy(
-                                        endTime = Date()
-                                    ))
+//                                Log.d("trip details", tripDetails.toString())
+                                onTripValueChange(tripDetails.copy(endTime = Date()))
                                 onTripEnd()
+                                viewModel.updateTimerValue(DEFAULT_TIMER_VALUE)
+                                currentTime = chosenTime
+                                oldPositionTime = currentTime
                             }
                         }
                     }

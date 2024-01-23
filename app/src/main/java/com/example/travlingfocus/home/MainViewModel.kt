@@ -8,6 +8,9 @@ import com.example.travlingfocus.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+//float constant of 600000f
+val DEFAULT_TIMER_VALUE = 600000f
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
 //    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
@@ -24,7 +27,7 @@ class MainViewModel @Inject constructor(
         _selectedTag.value = tag
     }
 
-    private  val _timerValue = MutableLiveData<Float>(60000f)
+    private  val _timerValue = MutableLiveData<Float>(DEFAULT_TIMER_VALUE)
     val timerValue: LiveData<Float>
         get() = _timerValue
 
