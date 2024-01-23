@@ -64,3 +64,17 @@ fun TripDetails.toTrip(): Trip {
         tag = tag,
     )
 }
+
+fun Trip.toTripDetails(): TripDetails {
+    return TripDetails(
+        id = id,
+        userId = userId,
+        destination = destination,
+        desResId = desResId,
+        completed = completed,
+        startTime = Date(startTime),
+        endTime = Date(endTime),
+        duration = duration,
+        tag = tag,
+    )
+}

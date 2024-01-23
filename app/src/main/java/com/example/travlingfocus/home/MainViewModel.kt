@@ -1,5 +1,6 @@
 package com.example.travlingfocus.home
 
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,6 +17,7 @@ class MainViewModel @Inject constructor(
 //    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 
 ) : ViewModel() {
+
     val shownSplash = mutableStateOf(SplashState.Shown)
 
     val timerState = mutableStateOf(TimerType.Timer)

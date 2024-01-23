@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,20 +16,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.travlingfocus.R
 
 @Composable
 fun MyTabBar(
     modifier: Modifier = Modifier,
-    onMenuClicked: () -> Unit,
+    onMenuClicked: () -> Unit = {},
     onTimerClick : () -> Unit = {},
     onStopWatchClick : () -> Unit = {},
     children: @Composable (Modifier) -> Unit,
@@ -46,25 +49,32 @@ fun MyTabBar(
             if(canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = null
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .clickable { navigateUp() },
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
-            Image(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .clickable(onClick = onMenuClicked),
-                painter = painterResource(id = R.drawable.ic_menu),
-                contentDescription = null,
-            )
+            else {
+                Image(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .clickable(onClick = onMenuClicked),
+                    painter = painterResource(id = R.drawable.ic_menu),
+                    contentDescription = null,
+                )
+            }
         }
+        children(
+            Modifier
+                .align(Alignment.CenterVertically)
+        )
 
     }
-    children(
-        Modifier
-            .align(Alignment.CenterVertically)
-    )
+
 }
 
 @Composable
@@ -76,7 +86,6 @@ fun MyTab(
     Box(
         modifier = modifier
             .padding(8.dp)
-//            .clip(RoundedCornerShape(8.dp))
             .border(
                 BorderStroke(2.dp, Color.Black),
                 RoundedCornerShape(24.dp)
@@ -110,6 +119,30 @@ fun MyTab(
             .padding(16.dp)
             .padding(4.dp),
         painter = painterResource(id = R.drawable.ic_music),
+        contentDescription = null
+    )
+}
+
+@Composable
+fun TitleTab (
+    modifier: Modifier = Modifier,
+    title: String,
+)
+{
+    Text(
+        text = title,
+        modifier = Modifier
+            .padding(16.dp),
+        fontSize = 32.sp,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onPrimary,
+
+    )
+    Image(
+        modifier = Modifier
+            .padding(16.dp)
+            .padding(4.dp),
+        painter = painterResource(id = R.drawable.ic_share),
         contentDescription = null
     )
 }

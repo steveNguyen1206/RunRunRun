@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.travlingfocus.home.MainScreen
 import com.example.travlingfocus.home.MainViewModel
+import com.example.travlingfocus.timline.TimeLineScreen
 
 @Composable
 fun RambleNavGraph (
@@ -26,7 +27,10 @@ fun RambleNavGraph (
         }
 
         composable(Routes.TimeLine.route) {
-
+            TimeLineScreen(
+                navigateUp = { navController.navigateUp() },
+                canNavigateBack = true,
+            )
         }
     }
 }
