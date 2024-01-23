@@ -1,5 +1,7 @@
 package com.example.travlingfocus.rewardscreen
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,5 +35,24 @@ class RewardViewModel @Inject constructor(
             TimeType.Year -> "Year"
             TimeType.All -> "All Time"
         }
+    }
+
+
+//  Bottom Sheet State
+    var isSheetOpen = mutableStateOf(true)
+
+    fun getSheetState(): State<Boolean>{
+        return isSheetOpen
+    }
+    fun openBottomSheet(){
+        isSheetOpen.value = true
+    }
+    fun closeBottomSheet(){
+        isSheetOpen.value = false
+    }
+
+    // Data
+    fun getTotalHours() : Double {
+        return 96.7
     }
 }

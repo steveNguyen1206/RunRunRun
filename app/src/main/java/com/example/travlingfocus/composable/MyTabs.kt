@@ -203,7 +203,8 @@ fun MyTabReward(
         Image(
             modifier = Modifier
                 .padding(16.dp)
-                .padding(4.dp),
+                .padding(4.dp)
+                .width(30.dp),
             painter = painterResource(id = R.drawable.ico_share),
             contentDescription = null,
             contentScale = ContentScale.Fit,
