@@ -1,5 +1,6 @@
 package com.example.travlingfocus.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -55,6 +56,8 @@ fun TravelBottomSheet (
     modifier: Modifier = Modifier,
     viewModel: MainViewModel,
     travelClick: () -> Unit ,
+    tripDetails: TripDetails,
+    onTripValueChange: (TripDetails) -> Unit
 )
 {
     val scaffoldState = rememberScaffoldState()
@@ -79,15 +82,16 @@ fun TravelBottomSheet (
         )
         {
 
-            val selectedTag by viewModel.selectedTag.observeAsState(ActivityTag.frend)
+            val selectedTag by viewModel.selectedTag.observeAsState(ActivityTag.friend)
 
             var selectedTimeIndex by remember {
                 mutableStateOf(0)
             }
 
-            var selectedSouvenir by remember {
-                mutableStateOf(Souvenir.Sourvenir1)
+            var selectedDestination by remember {
+                mutableStateOf(viewModel.selectedDestination.value ?: Destinations.HaGiang)
             }
+            Log.d("TravelBottomSheet", "selectedDestination: ${selectedDestination.place}")
 
             Text(
                 text = "Focus Time",
@@ -103,10 +107,12 @@ fun TravelBottomSheet (
                 onChose = {
                     viewModel.updateTimerValue(it.toFloat() * 60000)
                     selectedTimeIndex = viewModel.timeOptions.indexOf(it)
+                    onTripValueChange(tripDetails.copy(duration = it.toFloat() * 60000))
                 },
                 selectedIndex = selectedTimeIndex,
                 fontSize = 18,
                 unSelectedBackground = GrayContainer,
+
             )
 
             Text(
@@ -122,6 +128,7 @@ fun TravelBottomSheet (
                 list = ActivityTag.values().map { '#' + it.name },
                 onChose = {
                     viewModel.updateTag(ActivityTag.valueOf(it.replace("#", "")))
+                    onTripValueChange(tripDetails.copy(tag = it.replace("#", "")))
                 },
                 selectedIndex = selectedTag.ordinal,
                 fontSize = 16,
@@ -138,8 +145,8 @@ fun TravelBottomSheet (
             LazyHorizontalGrid(
                 rows = GridCells.Adaptive(140.dp),
                 content = {
-                    items(Souvenir.values().size) { index ->
-                        val souvenir = Souvenir.values()[index]
+                    items(Destinations.values().size) { index ->
+                        val destination = Destinations.values()[index]
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
@@ -147,7 +154,7 @@ fun TravelBottomSheet (
                                 .clip(RoundedCornerShape(20.dp))
                                 .border(
                                     width = 2.dp,
-                                    color = if (selectedSouvenir.ordinal == souvenir.ordinal) GreenLight else Color.Transparent,
+                                    color = if (selectedDestination.ordinal == destination.ordinal) GreenLight else Color.Transparent,
                                     shape = RoundedCornerShape(20.dp)
                                 )
                                 .background(MaterialTheme.colorScheme.tertiary),
@@ -155,14 +162,15 @@ fun TravelBottomSheet (
                         ) {
 
                             GifImage(
-                                data = souvenir.imageId,
+                                data = destination.imageId,
                                 mayBeginGifAnimation = false,
                                 onGifClick = {
-                                    selectedSouvenir = souvenir
-                                    viewModel.updateSelectedSouvenir(souvenir)
+                                    selectedDestination = destination
+                                    viewModel.updateSelectedDestination(destination)
+                                    onTripValueChange(tripDetails.copy(destination = destination.place, desResId = destination.imageId))
                                 },
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .size(120.dp)
                             )
                         }
                     }
@@ -178,9 +186,9 @@ fun TravelBottomBar (
     viewModel: MainViewModel,
     travelClick: () -> Unit ,
 ){
-    val selectedSouvenir by viewModel.selectedSouvenir.observeAsState(Souvenir.Sourvenir1)
+    val selectedDestinations by viewModel.selectedDestination.observeAsState(Destinations.HaGiang)
     val selectedTime by viewModel.timerValue.observeAsState(60000f)
-    val selectedTag by viewModel.selectedTag.observeAsState(ActivityTag.frend)
+    val selectedTag by viewModel.selectedTag.observeAsState(ActivityTag.friend)
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.primary,
@@ -192,7 +200,7 @@ fun TravelBottomBar (
         ) {
 
             GifImage(
-                data = selectedSouvenir.imageId,
+                data = selectedDestinations.imageId,
                 mayBeginGifAnimation = false,
                 onGifClick = {
                 },

@@ -63,16 +63,20 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.toSize
 import com.example.travlingfocus.R
 import com.example.travlingfocus.home.ActivityTag
 import com.example.travlingfocus.home.MainViewModel
 import com.example.travlingfocus.home.TimerType
+import com.example.travlingfocus.home.TripDetails
+import com.example.travlingfocus.home.TripUiState
 import com.example.travlingfocus.ui.theme.PinkGray
 import com.example.travlingfocus.ui.theme.PinkLight
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -92,7 +96,10 @@ fun Timer(
     timerType: TimerType = TimerType.Timer,
     viewModel: MainViewModel,
     openBottomSheet : () -> Unit,
-    triggerTimerFromOutSize: Int = 0
+    triggerTimerFromOutSize: Int = 0,
+    tripDetails: TripDetails,
+    onTripValueChange: (TripDetails) -> Unit = {},
+    onTripEnd: () -> Unit = {},
 ) {
     val draggThreshold = (strokeWidth.value * 3 )/(125 * Math.PI) * 180
 
@@ -158,8 +165,13 @@ fun Timer(
                 {
                     quote = MotivatedVote.values()[(quote.ordinal + 1).mod(MotivatedVote.values().size)]
                 }
-            } else if (currentTime <= 0f) {
+            } else if (currentTime == 0f && isTimerRunning) {
                 isTimerRunning = false
+                onTripValueChange(tripDetails.copy(
+                    completed = true,
+                    endTime = Date()
+                ))
+                onTripEnd()
             }
         } else {
             if (isTimerRunning && currentTime < totalTime) {
@@ -278,7 +290,9 @@ fun Timer(
                                 onDragEnd = {
                                     oldPositionTime = currentTime
                                     viewModel.updateTimerValue(currentTime)
-
+                                    onTripValueChange(tripDetails.copy(
+                                        duration = currentTime
+                                    ))
 //                           onPositionChange(positionValue)
                                 }
                             )
@@ -381,7 +395,7 @@ fun Timer(
                 contentAlignment = Alignment.Center
             )
             {
-                val selectedTag by viewModel.selectedTag.observeAsState(ActivityTag.frend)
+                val selectedTag by viewModel.selectedTag.observeAsState(ActivityTag.friend)
                 Text(
                     text = '#' + selectedTag.name,
                     fontSize = 16.sp,
@@ -404,6 +418,26 @@ fun Timer(
                 onButtonClick = {
                     if (currentTime > 0f) {
                         isTimerRunning = !isTimerRunning
+                        if(isTimerRunning) {
+                            val startTime = Date()
+                            onTripValueChange(
+                                tripDetails.copy(
+                                startTime = startTime, endTime = Date(startTime.time + currentTime.toLong())
+                            ))
+                            Log.d("trip details", tripDetails.toString())
+                        }
+                        else {
+                            if (chosenTime - currentTime > 10000f)
+                            {
+                                Log.d("trip details", tripDetails.toString())
+
+                                onTripValueChange(
+                                    tripDetails.copy(
+                                        endTime = Date()
+                                    ))
+                                onTripEnd()
+                            }
+                        }
                     }
 
                 },
@@ -414,7 +448,11 @@ fun Timer(
                     buttonColors
                 },
                 borderStroke =  if (isTimerRunning) BorderStroke(2.dp, Color.White) else null  ,
-                text = if (isTimerRunning) "Cancel" else "Travel",
+                text = if (isTimerRunning) {
+                    if(chosenTime - currentTime <= 10000f)
+                        "Cancel"
+                    else "Give up"
+                } else "Travel",
             )
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -459,3 +497,4 @@ private val iconOfquote = mapOf(
     MotivatedVote.quote10 to R.drawable.ic_car,
 
 )
+

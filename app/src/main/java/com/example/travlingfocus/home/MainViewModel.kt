@@ -11,12 +11,13 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
 //    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+
 ) : ViewModel() {
     val shownSplash = mutableStateOf(SplashState.Shown)
 
     val timerState = mutableStateOf(TimerType.Timer)
 
-    private val _selectedTag = MutableLiveData<ActivityTag>(ActivityTag.frend)
+    private val _selectedTag = MutableLiveData<ActivityTag>(ActivityTag.friend)
     val selectedTag: LiveData<ActivityTag>
         get() = _selectedTag
     fun updateTag(tag: ActivityTag) {
@@ -32,17 +33,24 @@ class MainViewModel @Inject constructor(
     }
     val timeOptions = List(10) { (it * 5 + 5).toString() }
 
-    private val _selectedSouvenir = MutableLiveData<Souvenir>(Souvenir.Sourvenir1)
-    val selectedSouvenir: LiveData<Souvenir>
-        get() = _selectedSouvenir
-    fun updateSelectedSouvenir(souvenir: Souvenir) {
-        _selectedSouvenir.value = souvenir
+//    private val _selectedSouvenir = MutableLiveData<Souvenir>(Souvenir.Sourvenir1)
+//    val selectedSouvenir: LiveData<Souvenir>
+//        get() = _selectedSouvenir
+//    fun updateSelectedSouvenir(souvenir: Souvenir) {
+//        _selectedSouvenir.value = souvenir
+//    }
+
+    private val _selctedDestination = MutableLiveData<Destinations>(Destinations.HaGiang)
+    val selectedDestination: LiveData<Destinations>
+        get() = _selctedDestination
+    fun updateSelectedDestination(destination: Destinations) {
+        _selctedDestination.value = destination
     }
 }
 
 
 enum class ActivityTag {
-    frend, study, family, sport, work, other
+    friend, study, family, sport, work, other
 }
 
 enum class Souvenir(val imageId: Int)
@@ -60,37 +68,31 @@ enum class Souvenir(val imageId: Int)
     Sourvenir11(R.drawable.cute_travel_11),
 }
 
-//sealed class Souvenir(var imageId: Int)
-//{
-//    object Sourvenir1: Souvenir(imageId = R.drawable.cute_travel_1)
-//    object Sourvenir2: Souvenir(imageId = R.drawable.cute_travel_2)
-//    object Sourvenir3: Souvenir(imageId = R.drawable.cute_travel_3)
-//    object Sourvenir4: Souvenir(imageId = R.drawable.cute_travel_4)
-//    object Sourvenir5: Souvenir(imageId = R.drawable.cute_travel_5)
-//    object Sourvenir6: Souvenir(imageId = R.drawable.cute_travel_6)
-//    object Sourvenir7: Souvenir(imageId = R.drawable.cute_travel_7)
-//    object Sourvenir8: Souvenir(imageId = R.drawable.cute_travel_8)
-//    object Sourvenir9: Souvenir(imageId = R.drawable.cute_travel_9)
-//    object Sourvenir10: Souvenir(imageId = R.drawable.cute_travel_10)
-//    object Sourvenir11: Souvenir(imageId = R.drawable.cute_travel_11)
-//    companion object {
-//        fun values(): Any {
-//            return listOf(
-//                Sourvenir1,
-//                Sourvenir2,
-//                Sourvenir3,
-//                Sourvenir4,
-//                Sourvenir5,
-//                Sourvenir6,
-//                Sourvenir7,
-//                Sourvenir8,
-//                Sourvenir9,
-//                Sourvenir10,
-//                Sourvenir11,
-//            )
-//        }
-//    }
-//}
+enum class Destinations (val imageId: Int, val place: String)
+{
+    CanTho(R.drawable.img_cantho, "Cần Thơ"),
+    DaLat(R.drawable.img_dalat, "Đà Lạt"),
+    DaNang(R.drawable.img_danang, "Đà Nẵng"),
+    HaNoi(R.drawable.img_hanoi, "Hà Nội"),
+    HoChiMinh(R.drawable.img_hcm, "TP Hồ Chí Minh"),
+    Hue(R.drawable.img_hue, "Huế"),
+    NhaTrang(R.drawable.img_nhatrang, "Nha Trang"),
+    PhuQuoc(R.drawable.img_phuquoc, "Phú Quốc"),
+//    QuangBinh(R.drawable.img_quangbinh),
+//    QuangNam(R.drawable.img_quangnam),
+//    QuangNinh(R.drawable.img_quangninh),
+    VungTau(R.drawable.img_vungtau, "Vũng Tàu"),
+    HoiAn(R.drawable.img_hoian, "Hội An"),
+    HaiPhong(R.drawable.img_haiphong, "Hải Phòng"),
+    HaLong(R.drawable.img_halong, "Hạ Long"),
+    NinhBinh(R.drawable.img_ninhbinh, "Ninh Bình"),
+    HaGiang(R.drawable.img_hagiang, "Hà Giang"),
+    SaPa(R.drawable.img_sapa, "Sa Pa"),
+    MocChau(R.drawable.img_mocchau, "Mộc Châu"),
+    PhanThiet(R.drawable.img_phanthiet, "Phan Thiết"),
+
+}
+
 
 
 
