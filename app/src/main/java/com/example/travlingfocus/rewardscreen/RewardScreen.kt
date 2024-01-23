@@ -1,15 +1,15 @@
 package com.example.travlingfocus.rewardscreen
 
-import android.graphics.drawable.PaintDrawable
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,13 +18,12 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
-import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -32,31 +31,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.travlingfocus.R
 import com.example.travlingfocus.composable.DisplaySpinner
 import com.example.travlingfocus.composable.MyTabBar
 import com.example.travlingfocus.composable.MyTabReward
-import com.example.travlingfocus.home.MainViewModel
-import com.example.travlingfocus.ui.theme.GreenGray
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 enum class TimeType{
     Day,  Month, Year, All, Week
@@ -178,6 +169,7 @@ fun RewardSpinnerButton(
     {
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -199,18 +191,129 @@ fun RewardSpinnerButton(
     }
 }
 
+@Preview(showBackground = true, backgroundColor = 0xFF81A684)
 @Composable
-fun RewardBoard(){
-    Image(
-        painterResource(id = R.drawable.ic_board),
-        contentDescription = null,
-        Modifier
-            .padding(horizontal = 32.dp, vertical = 16.dp)
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        contentScale = ContentScale.FillWidth,
-    )
+fun RewardBoard(
+    modifier: Modifier = Modifier,
+    viewModel: RewardViewModel = RewardViewModel()
+){
+    val places = viewModel.getPlaces()
+    Box(
+//        contentAlignment = Alignment.BottomEnd,
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(),
+        ) {
+            Image(
+                painterResource(id = R.drawable.ic_board),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.FillWidth,
+            )
+
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                //            columns = GridCells.Adaptive(120.dp),
+                columns = GridCells.Fixed(3),
+                content = {
+                    items(places.size) { index ->
+                        val place = places[index]
+                        RewardGridItem(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .background(MaterialTheme.colorScheme.surface)
+                                .wrapContentHeight(Alignment.CenterVertically),
+                            //                            .clip(RoundedCornerShape(20.dp))
+                            //                            .border(
+                            //                                width =  2.dp,
+                            //                                color = if (viewModel.selectedPlaceIndex == index) GreenGray else androidx.compose.ui.graphics.Color.Transparent,
+                            //                                shape = RoundedCornerShape(20.dp)
+                            //                            )
+                            place = place,
+                            pinColor = viewModel.getPinColor(index),
+                        ) {
+                            viewModel.setSelectedPlaceIndex(index)
+                        }
+                    }
+                }
+            )
+
+        }
+
+        Image(
+            painter = painterResource(id = R.drawable.bottom_img),
+            contentDescription = null,
+            modifier = Modifier
+                .width(100.dp)
+                .align(Alignment.BottomEnd),
+            contentScale = ContentScale.FillWidth,
+        )
+    }
+
 }
+
+@Composable
+fun RewardGridItem(
+    modifier: Modifier = Modifier,
+    place: Place,
+    pinColor: Color,
+    onClick: () -> Unit)
+{
+    Box(
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Column(
+            modifier = modifier
+                .clickable(onClick = onClick)
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.End,
+        ) {
+            Image(
+                painter = painterResource(id = place.imageId),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                //                .clip(RoundedCornerShape(20.dp)),
+                contentScale = ContentScale.FillWidth,
+            )
+
+            Text(
+                //            text = if (place.name != "Next Place") place.name else "",
+                text = place.name,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(vertical = 4.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                //            textAlign = Alignment.Center,
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_push_pin),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(pinColor, blendMode = BlendMode.ColorBurn),
+            )
+        }
+    }
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
