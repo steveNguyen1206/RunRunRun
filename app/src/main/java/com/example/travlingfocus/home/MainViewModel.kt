@@ -38,12 +38,6 @@ class MainViewModel @Inject constructor(
     }
     val timeOptions = List(10) { (it * 5 + 5).toString() }
 
-//    private val _selectedSouvenir = MutableLiveData<Souvenir>(Souvenir.Sourvenir1)
-//    val selectedSouvenir: LiveData<Souvenir>
-//        get() = _selectedSouvenir
-//    fun updateSelectedSouvenir(souvenir: Souvenir) {
-//        _selectedSouvenir.value = souvenir
-//    }
 
     private val _selctedDestination = MutableLiveData<Destinations>(Destinations.HaGiang)
     val selectedDestination: LiveData<Destinations>

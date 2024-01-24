@@ -8,6 +8,8 @@ interface TripsRepository {
 
     fun getTripStream(id: Int): Flow<Trip?>
 
+    fun getTripsByUserId(userId: Int): Flow<List<Trip>>
+
     suspend fun insertTrip(trip: Trip)
 
     suspend fun deleteTrip(trip: Trip)

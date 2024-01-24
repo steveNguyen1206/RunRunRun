@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kapt)
     alias(libs.plugins.hilt)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -79,6 +80,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("com.google.android.gms:play-services-location:18.0.0")
 
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.runtime)
@@ -90,6 +92,10 @@ dependencies {
 //    room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
     kapt(libs.androidx.room.compiler)
 
 
@@ -103,6 +109,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
+    implementation("com.google.firebase:firebase-auth:22.3.1")
+    implementation ("com.google.firebase:firebase-firestore:24.10.1")
 
     implementation(libs.coil.kt.compose)
     implementation(libs.coil.kt.gif)

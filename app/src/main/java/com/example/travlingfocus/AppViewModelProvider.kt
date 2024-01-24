@@ -6,6 +6,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.travlingfocus.Login.AuthViewModel
 import com.example.travlingfocus.home.TripCreateViewModel
 import com.example.travlingfocus.timline.TimeLineViewModel
 
@@ -48,6 +49,14 @@ object AppViewModelProvider {
                 travlingfocusApplication().container.tripsRepository
             )
          }
+
+        initializer {
+            AuthViewModel(
+                travlingfocusApplication().container.userRepository
+            )
+        }
+
+
     }
 }
 

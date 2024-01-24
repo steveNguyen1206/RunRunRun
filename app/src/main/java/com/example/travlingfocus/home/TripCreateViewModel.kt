@@ -19,8 +19,9 @@ class TripCreateViewModel(private val tripsRepository: TripsRepository) : ViewMo
         tripUiState = TripUiState(tripDetails, isEntryValid(tripDetails))
     }
 
-    suspend fun saveTrip() {
-        val trip = tripUiState.tripDetails.toTrip()
+    suspend fun saveTrip(userId: Int) {
+        val trip = tripUiState.tripDetails.copy(userId = userId).toTrip()
+
         if(isEntryValid(tripUiState.tripDetails))
             tripsRepository.insertTrip(trip)
         else Log.d("TripCreateViewModel", "saveTrip: invalid trip: ${trip.toString()}")

@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "852438946662",
+    "project_id": "rambletest-42028",
+    "storage_bucket": "rambletest-42028.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:852438946662:android:917986f6f1b1292f9aeea7",
+        "android_client_info": {
+          "package_name": "com.anelcc.simplelogin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbQZM1d8xrJ4btjiX1HeU8_P2A49214uI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:852438946662:android:eb4c52fc896e3d0f9aeea7",
+        "android_client_info": {
+          "package_name": "com.example.makeitso"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbQZM1d8xrJ4btjiX1HeU8_P2A49214uI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:852438946662:android:aa409dc3513e48209aeea7",
+        "android_client_info": {
+          "package_name": "com.example.travlingfocus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbQZM1d8xrJ4btjiX1HeU8_P2A49214uI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

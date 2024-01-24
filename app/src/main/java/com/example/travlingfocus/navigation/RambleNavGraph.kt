@@ -7,6 +7,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.travlingfocus.Login.LoginScreen
 import com.example.travlingfocus.home.MainScreen
 import com.example.travlingfocus.home.MainViewModel
 import com.example.travlingfocus.rewardscreen.RewardScreen
@@ -17,7 +18,7 @@ fun RambleNavGraph (
     navController: NavHostController,
     widthSizeClass: WindowWidthSizeClass,
 ){
-    NavHost(navController = navController, startDestination = Routes.Home.route) {
+    NavHost(navController = navController, startDestination = Routes.Login.route) {
         composable(Routes.Home.route) {
             MainScreen(
                 navigateToScreenRoute = {
@@ -40,8 +41,17 @@ fun RambleNavGraph (
                 canNavigateBack = true,
             )
         }
+
+        composable(Routes.Login.route) {
+            LoginScreen(
+                navigatoHomeScreen = {
+                    navController.navigate(Routes.Home.route)
+                }
+            )
+        }
     }
 }
+
 
 
 // sealed class: class with a fixed number of subclasses
@@ -52,4 +62,6 @@ sealed class Routes(val route: String){
     object Ranking: Routes("ranking")
     object Friend: Routes("friends")
     object Setting: Routes("setting")
+    object Login: Routes("login")
+    object SignUp: Routes("signup")
 }

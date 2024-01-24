@@ -7,6 +7,7 @@ import android.content.Context
  */
 interface AppContainer {
     val tripsRepository: TripsRepository
+    val userRepository: UserRepository
 }
 
 /**
@@ -18,5 +19,9 @@ class AppDataContainer(private val context: Context) : AppContainer {
      */
     override val tripsRepository: TripsRepository by lazy {
         OfflineTripsRepository(RambleDatabase.getDatabase(context).tripDao())
+    }
+
+    override val userRepository: UserRepository by lazy {
+        OfflineUserRepository(RambleDatabase.getDatabase(context).userDao())
     }
 }

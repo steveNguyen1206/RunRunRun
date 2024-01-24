@@ -6,10 +6,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Trip::class], version = 1, exportSchema = false)
+@Database(entities = [Trip::class, User::class], version = 2, exportSchema = false)
 abstract class RambleDatabase : RoomDatabase(){
 
     abstract fun tripDao(): TripDao
+
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile
@@ -18,7 +20,7 @@ abstract class RambleDatabase : RoomDatabase(){
         fun getDatabase(context: Context): RambleDatabase {
             Log.d("get database", "get database")
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, RambleDatabase::class.java, "trip_database")
+                Room.databaseBuilder(context, RambleDatabase::class.java, "ramble_database")
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }

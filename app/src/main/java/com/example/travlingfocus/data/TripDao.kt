@@ -19,6 +19,9 @@ interface TripDao {
     @Query("SELECT startTime from trips")
     fun getAllStartTime(): Flow<List<Long>>
 
+    @Query("SELECT * from trips WHERE userId = :userId")
+    fun getTripsByUserId(userId: Int): Flow<List<Trip>>
+
     // Specify the conflict strategy as IGNORE, when the user tries to add an
     // existing Item into the database Room ignores the conflict.
     @Insert(onConflict = OnConflictStrategy.IGNORE)

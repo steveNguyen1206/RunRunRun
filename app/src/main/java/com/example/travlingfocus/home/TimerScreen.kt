@@ -24,6 +24,7 @@ import com.example.travlingfocus.ui.theme.GreenLight
 import com.example.travlingfocus.ui.theme.PinkGray
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travlingfocus.AppViewModelProvider
+import com.example.travlingfocus.Login.AuthViewModel
 import kotlinx.coroutines.launch
 
 enum class TimerType {Timer, Stopwatch }
@@ -33,9 +34,11 @@ fun TimerScreen (
     modifier: Modifier = Modifier,
     viewModel: MainViewModel,
     timerType: TimerType = TimerType.Timer,
-    tripCreateViewModel: TripCreateViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    tripCreateViewModel: TripCreateViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    authViewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ){
 //                Text(text = "Back Layer")
+    val authUiState = authViewModel.authUiState
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
@@ -64,7 +67,7 @@ fun TimerScreen (
         },
         onTripEnd = {
             coroutineScope.launch {
-                tripCreateViewModel.saveTrip()
+                tripCreateViewModel.saveTrip(authUiState.value.userId)
             }
         }
     )

@@ -8,6 +8,7 @@ class OfflineTripsRepository @Inject constructor
     override fun getAllTripsStrem(): Flow<List<Trip>> = tripDao.getAllTrips()
 
     override fun getTripStream(id: Int): Flow<Trip?> = tripDao.getTrip(id)
+    override fun getTripsByUserId(userId: Int): Flow<List<Trip>> = tripDao.getTripsByUserId(userId)
 
     override suspend fun insertTrip(trip: Trip) = tripDao.insert(trip)
 

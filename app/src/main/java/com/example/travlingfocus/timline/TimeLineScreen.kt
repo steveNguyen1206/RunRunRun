@@ -64,6 +64,7 @@ import com.example.travlingfocus.composable.DateSelectionRow
 import com.example.travlingfocus.composable.totalTime
 import com.example.travlingfocus.data.Trip
 import com.example.travlingfocus.home.TripDetails
+import com.example.travlingfocus.home.toTripDetails
 import com.example.travlingfocus.ui.theme.GrayTripContainer
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -250,15 +251,44 @@ fun TimlineContent(
             }
         }
 
+        val openEditDialog = remember { mutableStateOf(false) }
+        val openEditMessageDialog = remember { mutableStateOf(false) }
+        val selectedEditTrip = remember { mutableStateOf(TripDetails()) }
 
         LazyColumn(content = {
             items(timelineUiState.tripByDay.size) { index ->
                 Trip(
                     trip = timelineUiState.tripByDay[index],
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        openEditDialog.value = true
+                        selectedEditTrip.value = timelineUiState.tripByDay[index].toTripDetails()
+                    }
                 )
             }
         })
+
+        when {
+            openEditDialog.value -> {
+                EditDialog(
+                    onDismissRequest = { openEditDialog.value = false },
+                    onEidtRequest = { openEditMessageDialog.value = true },
+                    onShareRequest = { /*TODO*/ }
+                )
+            }
+
+        }
+
+        if(openEditMessageDialog.value) {
+            EditMessageDialog(
+                onDismissRequest = {
+                    openEditMessageDialog.value = false
+                    openEditDialog.value = false
+                                   },
+                onSaveRequest = { openEditMessageDialog.value = false },
+                tripDetails = selectedEditTrip.value,
+                updateTrip = { selectedEditTrip.value = it }
+            )
+        }
     }
 }
 

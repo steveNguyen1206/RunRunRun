@@ -37,9 +37,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.travlingfocus.AppViewModelProvider
+import com.example.travlingfocus.Login.AuthViewModel
 import com.example.travlingfocus.navigation.RambleNavGraph
 import com.example.travlingfocus.navigation.Routes
 import com.example.travlingfocus.ui.theme.TravlingfocusTheme
@@ -78,7 +81,8 @@ enum class SplashState { Shown, Completed }
 fun MainScreen(
     navigateToScreenRoute: (String) -> Unit,
     widthSizeClass: WindowWidthSizeClass,
-    mainViewModel: MainViewModel = hiltViewModel<MainViewModel>()
+    mainViewModel: MainViewModel = hiltViewModel<MainViewModel>(),
+    authViewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.Factory)
 )
 {
 // Layout Container
@@ -120,13 +124,19 @@ fun MainScreen(
                     mainViewModel.shownSplash.value = SplashState.Completed
                 }
             )
-            MainContent(
-                navigateToScreenRoute = navigateToScreenRoute,
-                modifier = Modifier.alpha(contentAlpha),
-                topPadding = contentTopPadding,
-                widthSize = widthSizeClass,
-                viewModel = mainViewModel
-            )
+
+//            val authUiState = authViewModel.authUiState
+//            if(authUiState.value.isLogined)
+                MainContent(
+                    navigateToScreenRoute = navigateToScreenRoute,
+                    modifier = Modifier.alpha(contentAlpha),
+                    topPadding = contentTopPadding,
+                    widthSize = widthSizeClass,
+                    viewModel = mainViewModel
+                )
+//            else {
+//                navigateToScreenRoute(Routes.Login.route)
+//            }
         }
 
     }
