@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
@@ -62,6 +63,6 @@ fun GifImage(
         ),
         contentDescription = null,
         modifier = modifier.clickable { onGifClick() },
-
+        contentScale = ContentScale.Crop,
     )
 }

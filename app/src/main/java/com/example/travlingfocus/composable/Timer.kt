@@ -1,6 +1,21 @@
 package com.example.travlingfocus.composable
 
 import android.util.Log
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -16,6 +31,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -44,12 +60,24 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.toSize
 import com.example.travlingfocus.R
+import com.example.travlingfocus.home.ActivityTag
+import com.example.travlingfocus.home.DEFAULT_TIMER_VALUE
 import com.example.travlingfocus.home.MainViewModel
 import com.example.travlingfocus.home.TimerType
+import com.example.travlingfocus.home.TripDetails
+import com.example.travlingfocus.home.TripUiState
+import com.example.travlingfocus.ui.theme.PinkGray
 import com.example.travlingfocus.ui.theme.PinkLight
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.Date
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -58,6 +86,7 @@ import kotlin.math.sin
 
 public const val totalTime = 7200000f
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Timer(
     handleColor: Color,
@@ -67,7 +96,11 @@ fun Timer(
     strokeWidth: Dp = 10.dp,
     timerType: TimerType = TimerType.Timer,
     viewModel: MainViewModel,
-    openBottomSheet : () -> Unit
+    openBottomSheet : () -> Unit,
+    triggerTimerFromOutSize: Int = 0,
+    tripDetails: TripDetails,
+    onTripValueChange: (TripDetails) -> Unit = {},
+    onTripEnd: () -> Unit = {},
 ) {
     val draggThreshold = (strokeWidth.value * 3 )/(125 * Math.PI) * 180
 
@@ -77,14 +110,11 @@ fun Timer(
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
-    val chosenTime by viewModel.timerValue.observeAsState(60000f)
-
-    Log.d("chosenTime", chosenTime.toString())
+    val chosenTime by viewModel.timerValue.observeAsState(DEFAULT_TIMER_VALUE)
 
     var value by remember  {
         mutableStateOf(chosenTime / totalTime)
     }
-    Log.d("value", value.toString())
 
     var currentTime by remember {
         mutableStateOf(chosenTime)
@@ -105,7 +135,14 @@ fun Timer(
         mutableStateOf(chosenTime)
     }
 
-    Log.d("oldPositionTime", oldPositionTime.toString())
+    LaunchedEffect(key1 = triggerTimerFromOutSize, block = {
+            if(!isTimerRunning && triggerTimerFromOutSize != 0) {
+                isTimerRunning = !isTimerRunning
+            }
+    })
+    var quote by remember {
+        mutableStateOf(MotivatedVote.quote0)
+    }
 
     LaunchedEffect(key1 = chosenTime, block = {
         currentTime = chosenTime
@@ -119,8 +156,17 @@ fun Timer(
                 delay(100L)
                 currentTime -= 100f
                 value = currentTime / totalTime.toFloat()
-            } else if (currentTime <= 0f) {
+                if(currentTime.mod(10000f) == 0f)
+                {
+                    quote = MotivatedVote.values()[(quote.ordinal + 1).mod(MotivatedVote.values().size)]
+                }
+            } else if (currentTime == 0f && isTimerRunning) {
                 isTimerRunning = false
+                onTripValueChange(tripDetails.copy(
+                    completed = true,
+                    endTime = Date()
+                ))
+                onTripEnd()
             }
         } else {
             if (isTimerRunning && currentTime < totalTime) {
@@ -146,11 +192,22 @@ fun Timer(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.weight(1f)
         ) {
-            Text(
-                text = "Let's get ready to ramble!",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+
+            AnimatedContent(
+                targetState = quote,
+                transitionSpec = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(durationMillis = 500)
+                    ) togetherWith ExitTransition.None
+                }
+            ) { targetState ->
+                Text(
+                    text = "${targetState.quote}",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
             Spacer(modifier = Modifier.height(32.dp))
 
             Box (
@@ -215,24 +272,27 @@ fun Timer(
                                             currentTime += 120000f
                                         else currentTime -= 120000f
                                         value = currentTime / totalTime
-//                                        oldPositionTime = currentTime
-//                                        viewModel.updateTimerValue(currentTime)
-
                                     }
 
                                 },
                                 onDragEnd = {
                                     oldPositionTime = currentTime
                                     viewModel.updateTimerValue(currentTime)
-
-//                           onPositionChange(positionValue)
+                                    onTripValueChange(tripDetails.copy(duration = currentTime))
                                 }
                             )
                         }
                 ) {
-
                     drawCircle(
                         color = PinkLight,
+                    )
+                    val radiousX = size.width * 0.8f
+                    val radiousY = size.height * 0.35f
+                    drawOval(
+                        color = PinkGray,
+                        topLeft = Offset((center.x - radiousX / 2), center.y),
+                        size = Size(radiousX, radiousY),
+//                        style = Stroke(width = 2.dp.toPx())
                     )
                     drawArc(
                         color = inactiveBarColor,
@@ -264,15 +324,69 @@ fun Timer(
                     )
                 }
 
-                GifImage(data = R.drawable.cute_travel_1 ,
-//                    mysize = coil.size.Size(200, 250),
-                    mayBeginGifAnimation = isTimerRunning,
-                    onGifClick = {
+                val density = LocalDensity.current
+
+                val infiniteTransition = rememberInfiniteTransition()
+                val offset by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = -32f,
+                    animationSpec = infiniteRepeatable(
+                        tween(1000),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+
+                )
+
+                AnimatedContent(
+                    targetState = quote,
+                    transitionSpec = {
+                        slideIntoContainer(
+                            towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(durationMillis = 500)
+                        ) togetherWith ExitTransition.None
+                    }
+                ){
+                    targetState ->
+                    GifImage(data = iconOfquote[targetState]!!,
+                        mayBeginGifAnimation = isTimerRunning,
+                        onGifClick = {
                                       if(!isTimerRunning) {
                                           openBottomSheet()
                                       }
-                    },
-                    modifier = Modifier.size(180.dp)
+                        } ,
+                        modifier = Modifier
+                            .size(148.dp)
+                            .offset {
+                                if (isTimerRunning) Offset(
+                                    0f,
+                                    offset
+                                ).toIntOffset() else Offset.Zero.toIntOffset()
+                            }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+
+//            tag text
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .wrapContentSize()
+                    .border(
+                        BorderStroke(2.dp, Color.White),
+                        RoundedCornerShape(20.dp)
+                    )
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp)),
+                contentAlignment = Alignment.Center
+            )
+            {
+                val selectedTag by viewModel.selectedTag.observeAsState(ActivityTag.friend)
+                Text(
+                    text = '#' + selectedTag.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    modifier = Modifier.padding(8.dp)
                 )
             }
         }
@@ -284,40 +398,84 @@ fun Timer(
                 color = Color.White,
                 modifier = Modifier.padding(32.dp)
             )
-            Button(
-                onClick = {
-                    if (currentTime >  0f) {
-                        isTimerRunning = !isTimerRunning
-                    }
-                },
 
+            PrimButton(
+                onButtonClick = {
+                    if (currentTime > 0f) {
+                        isTimerRunning = !isTimerRunning
+                        if(isTimerRunning) {
+                            val startTime = Date()
+                            onTripValueChange(tripDetails.copy(startTime = startTime))
+//                            Log.d("trip details", tripDetails.toString())
+                        }
+                        else {
+                            if (chosenTime - currentTime > 10000f)
+                            {
+//                                Log.d("trip details", tripDetails.toString())
+                                onTripValueChange(tripDetails.copy(endTime = Date()))
+                                onTripEnd()
+                                viewModel.updateTimerValue(DEFAULT_TIMER_VALUE)
+                                currentTime = chosenTime
+                                oldPositionTime = currentTime
+                            }
+                        }
+                    }
+
+                },
                 colors = ButtonDefaults.run {
                     val buttonColors = buttonColors(
-                        if (!isTimerRunning || currentTime <= 0L) MaterialTheme.colorScheme.secondary else Color.Transparent
+                        if (!isTimerRunning || currentTime <= 0L) MaterialTheme.colorScheme.secondary else  MaterialTheme.colorScheme.primary
                     )
                     buttonColors
                 },
-                shape = RoundedCornerShape(20.dp),
-                border = if (isTimerRunning) BorderStroke(2.dp, Color.White) else null,
-                modifier = Modifier
-                    .padding(8.dp, 32.dp)
-                    .shadow(elevation = 9.dp, spotColor = Color.Black, ambientColor = Color.Black, shape = RoundedCornerShape(20.dp))
+                borderStroke =  if (isTimerRunning) BorderStroke(2.dp, Color.White) else null  ,
+                text = if (isTimerRunning) {
+                    if(chosenTime - currentTime <= 10000f)
+                        "Cancel"
+                    else "Give up"
+                } else "Travel",
             )
-            {
-                Text(
-                    text = if (isTimerRunning) "Cancel"
-                    else "Travel",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
             Spacer(modifier = Modifier.height(32.dp))
 
     }
 }
 
+private fun Offset.toIntOffset() = IntOffset(x.roundToInt(), y.roundToInt())
+
 fun timeFormatUtil (time: Float): String {
-    val minutes = (time / 60000).roundToInt().toString().padStart(2, '0')
+    val minutes = (time / 60000).toInt().toString().padStart(2, '0')
     val seconds =  ((time.toInt() % 60000) / 1000).toString().padStart(2, '0')
     return minutes + " : " + seconds
 }
+
+enum class MotivatedVote (val quote: String ) {
+    quote0("Let's get ready to ramble"),
+    quote1("Focus sharp, success closer."),
+    quote2("Eyes on the goal, distractions fade."),
+    qoute3("Concentrate, conquer, celebrate."),
+    quote4("Block distractions, unlock achievements."),
+    quote5("Time invested, focus manifested."),
+    quote6("Distractions out, determination in."),
+    quote7("Mind sharp, goals in sight."),
+    quote8("Stay centered, success enters."),
+    quote9("Focused steps lead to triumph."),
+    quote10("In the zone, greatness grown.")
+
+
+}
+
+private val iconOfquote = mapOf(
+    MotivatedVote.quote0 to R.drawable.ic_balo,
+    MotivatedVote.quote1 to R.drawable.ic_map,
+    MotivatedVote.quote2 to R.drawable.ic_guitar,
+    MotivatedVote.qoute3 to R.drawable.ic_camera,
+    MotivatedVote.quote4 to R.drawable.ic_health,
+    MotivatedVote.quote5 to R.drawable.ic_ticket,
+    MotivatedVote.quote6 to R.drawable.ic_toothpath,
+    MotivatedVote.quote7 to R.drawable.ic_bento,
+    MotivatedVote.quote8 to R.drawable.ic_clothe,
+    MotivatedVote.quote9 to R.drawable.ic_card,
+    MotivatedVote.quote10 to R.drawable.ic_car,
+
+)
+
