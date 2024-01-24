@@ -21,8 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +35,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -166,16 +163,16 @@ fun MyTab(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RewardTabBarPreview() {
-    MyTabBar(
-        modifier = Modifier
-            .fillMaxWidth()
-    ){
-        MyTabReward(modifier = it, hours = 96.7)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun RewardTabBarPreview() {
+//    MyTabBar(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//    ){
+//        MyTabReward(modifier = it, hours = 96.7)
+//    }
+//}
 
 //@Preview(showBackground = true)
 //@Composable
@@ -190,7 +187,7 @@ fun MyTabReward(
     onShareClick: () -> Unit = {},
 ) {
     Row(
-        modifier = modifier,
+        modifier = Modifier,
     ) {
         Box(
         modifier = modifier
@@ -212,8 +209,8 @@ fun MyTabReward(
         ) {
         Text(
             text = hours.toString() + " hours",
-            fontSize = MaterialTheme.typography.h4.fontSize,
-            color = MaterialTheme.colors.onPrimary,
+            fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+            color = MaterialTheme.colorScheme.onPrimary,
             // I need fontWeights bold
             fontWeight = FontWeight.Bold,
             modifier = modifier.padding(horizontal = 16.dp),

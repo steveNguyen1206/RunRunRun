@@ -44,10 +44,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.travlingfocus.R
 import com.example.travlingfocus.composable.DisplaySpinner
 import com.example.travlingfocus.composable.MyTabBar
 import com.example.travlingfocus.composable.MyTabReward
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 enum class TimeType{
     Day,  Month, Year, All, Week
@@ -57,16 +59,16 @@ enum class TimeType{
 @Composable
 fun RewardScreenPreview() {
     RewardScreen(
-        widthSize = WindowWidthSizeClass.Medium,
         viewModel = RewardViewModel(),
     )
 }
 
 @Composable
 fun RewardScreen(
-    widthSize: WindowWidthSizeClass,
     modifier: Modifier = Modifier,
-    viewModel: RewardViewModel
+    viewModel: RewardViewModel = hiltViewModel<RewardViewModel>(),
+    navigateUp: () -> Unit = {},
+    canNavigateBack: Boolean = true,
 ) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(
@@ -77,16 +79,16 @@ fun RewardScreen(
             MyTabBar(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-            ){
-                MyTabReward(modifier = it, hours = viewModel.getTotalHours())
-            }
+                    .padding(16.dp),
+                navigateUp = navigateUp,
+                canNavigateBack = canNavigateBack,
+                children = { MyTabReward(modifier = it, hours = viewModel.getTotalHours())}
+            )
         },
     ){
 
         RewardContent(
             modifier = modifier.padding(it),
-            widthSize = widthSize,
             viewModel = viewModel,
         )
     }
@@ -95,7 +97,6 @@ fun RewardScreen(
 @Composable
 fun RewardContent(
     modifier: Modifier = Modifier,
-    widthSize: WindowWidthSizeClass,
     viewModel: RewardViewModel
 ) {
     Column(
@@ -106,7 +107,6 @@ fun RewardContent(
     ) {
         RewardSpinner(
             modifier,
-            widthSize,
             viewModel
         )
 
@@ -122,7 +122,6 @@ fun RewardContent(
 @Composable
 fun RewardSpinner(
     modifier: Modifier = Modifier,
-    widthSize: WindowWidthSizeClass,
     viewModel: RewardViewModel
 ) {
     val options = remember(key1 = viewModel.timeOptions) {
