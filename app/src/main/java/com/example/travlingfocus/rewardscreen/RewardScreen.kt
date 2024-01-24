@@ -78,8 +78,7 @@ fun RewardScreen(
         topBar = {
             MyTabBar(
                 modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxWidth(),
                 navigateUp = navigateUp,
                 canNavigateBack = canNavigateBack,
                 children = { MyTabReward(modifier = it, hours = viewModel.getTotalHours())}

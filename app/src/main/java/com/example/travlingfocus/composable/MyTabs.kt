@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -52,16 +53,18 @@ fun MyTabBar(
     navigateUp: () -> Unit = {},
 ) {
     Row(
-        modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier.fillMaxWidth().padding(20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         // Separate Row as the children shouldn't have the padding
-        Row(Modifier.padding(16.dp)) {
+        Row(
+//            modifier = Modifier.padding(20.dp)
+        ) {
             if(canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         modifier = Modifier
-                            .padding(4.dp)
                             .clickable { navigateUp() },
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
                         contentDescription = null,
@@ -72,7 +75,6 @@ fun MyTabBar(
             else {
                 Image(
                     modifier = Modifier
-                        .padding(4.dp)
                         .clickable(onClick = onMenuClicked),
                     painter = painterResource(id = R.drawable.ic_menu),
                     contentDescription = null,
@@ -99,7 +101,7 @@ fun MyTab(
     var isMusicPlaying by remember {  mutableStateOf(true) }
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .clip(RoundedCornerShape(24.dp))
             .border(
                 BorderStroke(1.dp, Color(0xFFA0A0A0)),
@@ -116,15 +118,14 @@ fun MyTab(
             )
     ) {
         Row(
-            modifier
+            Modifier
                 .padding(8.dp)
                 .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+//            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Image(
                 modifier = Modifier
-                    .padding(4.dp)
                     .clickable(onClick = onTimerClick),
                 painter = painterResource(id = R.drawable.ic_timmer),
                 contentDescription = null,
@@ -132,7 +133,6 @@ fun MyTab(
             Spacer(modifier = Modifier.width(40.dp))
             Image(
                 modifier = Modifier
-                    .padding(4.dp)
                     .clickable(onClick = onStopWatchClick),
                 painter = painterResource(id = R.drawable.ic_stopwatch),
                 contentDescription = null,
@@ -142,15 +142,12 @@ fun MyTab(
 
 //   I want to fill with only one width for multiple images
     Box(
-        modifier
-            .width(70.dp)
-            .height(70.dp),
-        contentAlignment = Alignment.Center
+        Modifier.size(48.dp),
+        contentAlignment = Alignment.TopCenter
     ) {
         Image(
             modifier = Modifier
-                //            .size(48.dp)
-                .padding(vertical = 16.dp)
+//                .padding(vertical = 16.dp)
                 .padding(vertical = 4.dp)
                 .clickable(onClick = {
                     isMusicPlaying = !isMusicPlaying
@@ -186,12 +183,8 @@ fun MyTabReward(
     modifier: Modifier = Modifier,
     onShareClick: () -> Unit = {},
 ) {
-    Row(
-        modifier = Modifier,
-    ) {
         Box(
-        modifier = modifier
-            .padding(8.dp)
+        modifier = Modifier
             .clip(RoundedCornerShape(24.dp))
             .border(
                 BorderStroke(1.dp, Color(0xFFA0A0A0)),
@@ -218,16 +211,12 @@ fun MyTabReward(
     }
 
 //   I want to fill with only one width for multiple images
-        Image(
-            modifier = Modifier
-                .padding(16.dp)
-                .padding(4.dp)
-                .size(30.dp),
-            painter = painterResource(id = R.drawable.ico_share),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-        )
-    }
+    Image(
+        modifier = Modifier,
+        painter = painterResource(id = R.drawable.ico_share),
+        contentDescription = null,
+        contentScale = ContentScale.Fit,
+    )
 }
 
 @Composable
