@@ -22,5 +22,8 @@ val GrayText = Color(0xFF9E9E9E)
 val GrayContainer = Color(0xFFEFEFEF)
 val GrayDivider = Color(0xFFFAF9F9)
 val GrayTripContainer = Color(0xFFF6F6F5)
+val GrayCancel = Color(0xFFC6C6C6)
+
+val RedDanger = Color(0xFFD5656F)
 
 

@@ -47,7 +47,7 @@ data class TripDetails (
     val completed: Boolean = false,
     val startTime: Date = Date(),
     val endTime: Date = Date(),
-    val duration: Float = 60000f,
+    val duration: Float = DEFAULT_TIMER_VALUE,
     val tag: String = ActivityTag.friend.name,
 )
 

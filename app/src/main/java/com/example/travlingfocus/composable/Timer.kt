@@ -20,6 +20,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,8 +34,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,6 +66,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.toSize
@@ -73,8 +77,10 @@ import com.example.travlingfocus.home.MainViewModel
 import com.example.travlingfocus.home.TimerType
 import com.example.travlingfocus.home.TripDetails
 import com.example.travlingfocus.home.TripUiState
+import com.example.travlingfocus.ui.theme.GrayCancel
 import com.example.travlingfocus.ui.theme.PinkGray
 import com.example.travlingfocus.ui.theme.PinkLight
+import com.example.travlingfocus.ui.theme.RedDanger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -186,6 +192,8 @@ fun Timer(
         horizontalAlignment = Alignment.CenterHorizontally,
 
     ) {
+
+        val openAlertDialog = remember { mutableStateOf(false) }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -376,7 +384,12 @@ fun Timer(
                         BorderStroke(2.dp, Color.White),
                         RoundedCornerShape(20.dp)
                     )
-                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp)),
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
+                    .clickable {
+                        if(!isTimerRunning) {
+                            openBottomSheet()
+                        }
+                    },
                 contentAlignment = Alignment.Center
             )
             {
@@ -412,11 +425,7 @@ fun Timer(
                             if (chosenTime - currentTime > 10000f)
                             {
 //                                Log.d("trip details", tripDetails.toString())
-                                onTripValueChange(tripDetails.copy(endTime = Date()))
-                                onTripEnd()
-                                viewModel.updateTimerValue(DEFAULT_TIMER_VALUE)
-                                currentTime = chosenTime
-                                oldPositionTime = currentTime
+                                openAlertDialog.value = true
                             }
                         }
                     }
@@ -437,7 +446,87 @@ fun Timer(
             )
             Spacer(modifier = Modifier.height(32.dp))
 
+        when {
+            openAlertDialog.value -> {
+                AlertDialogExample(
+                    onDismissRequest = {
+                        openAlertDialog.value = false
+                        isTimerRunning = true
+                    },
+                    onConfirmation = {
+                        openAlertDialog.value = false
+                        onTripValueChange(tripDetails.copy(endTime = Date()))
+                        onTripEnd()
+                        viewModel.updateTimerValue(DEFAULT_TIMER_VALUE)
+                        currentTime = chosenTime
+                        oldPositionTime = currentTime
+                    },
+                    dialogTitle = "Are you sure to give up?",
+                    dialogText = "Focus more than 10 minutes to receive souvenirs"
+                )
+            }
+        }
+
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlertDialogExample(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+) {
+    AlertDialog(
+        title = {
+            Text(text = dialogTitle, fontWeight = FontWeight.Bold, color = Color.Black)
+        },
+        text = {
+            Text(text = dialogText, textAlign = TextAlign.Center)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onConfirmation()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = RedDanger,
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "Give up",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = {
+                    onDismissRequest()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = GrayCancel,
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "Cancel",
+                    fontSize =18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+        }
+    )
 }
 
 private fun Offset.toIntOffset() = IntOffset(x.roundToInt(), y.roundToInt())

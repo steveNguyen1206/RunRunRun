@@ -14,4 +14,8 @@ class OfflineTripsRepository @Inject constructor
     override suspend fun deleteTrip(trip: Trip) = tripDao.delete(trip)
 
     override suspend fun updateTrip(trip: Trip) = tripDao.update(trip)
+
+    override fun getAllStartTime(): Flow<List<Long>> = tripDao.getAllStartTime()
+
+    override fun getTripInRange(startTime: Long, endTime: Long): Flow<List<Trip>> = tripDao.getTripInRange(startTime, endTime)
 }

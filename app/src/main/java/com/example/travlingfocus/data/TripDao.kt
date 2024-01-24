@@ -16,6 +16,9 @@ interface TripDao {
     @Query("SELECT * from trips WHERE id = :id")
     fun getTrip(id: Int): Flow<Trip>
 
+    @Query("SELECT startTime from trips")
+    fun getAllStartTime(): Flow<List<Long>>
+
     // Specify the conflict strategy as IGNORE, when the user tries to add an
     // existing Item into the database Room ignores the conflict.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -23,7 +26,9 @@ interface TripDao {
 
     @Update
     suspend fun update(trip: Trip)
-
     @Delete
     suspend fun delete(trip: Trip)
+
+    @Query("SELECT * from trips WHERE startTime >= :startTime AND endTime <= :endTime")
+    fun getTripInRange(startTime: Long, endTime: Long): Flow<List<Trip>>
 }

@@ -1,6 +1,7 @@
 package com.example.travlingfocus.timline
 
 import android.graphics.drawable.Icon
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -96,7 +97,8 @@ fun TimeLineScreen(
             content = {
                 TimlineContent(
                     timelineUiState = timelineUiState,
-                    modifier = Modifier.padding(it)
+                    modifier = Modifier.padding(it),
+                    updateCurrentDay = { viewModel.updateCurrentDay(it) }
                 )
             }
         )
@@ -107,11 +109,16 @@ fun TimeLineScreen(
 @Composable
 fun TimlineContent(
     timelineUiState: TimelineUiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    updateCurrentDay: (Date) -> Unit,
 ) {
     Column (
         modifier = modifier.fillMaxSize()
     ) {
+        val curDateOfMon = SimpleDateFormat("dd").format(timelineUiState.currentDay)
+        val curDateOfWek = SimpleDateFormat("EEE").format(timelineUiState.currentDay)
+        val curMonAndYear = SimpleDateFormat("MMM yyyy").format(timelineUiState.currentDay)
+        val curDayPair = Pair(curDateOfWek, curDateOfMon)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -122,8 +129,9 @@ fun TimlineContent(
             Row(
                 modifier = Modifier.wrapContentSize()
             ){
+
                 Text(
-                    text = "24",
+                    text = curDateOfMon,
                     fontSize = 48.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -135,7 +143,7 @@ fun TimlineContent(
                 ) {
 
                     Text(
-                        text = "Wed",
+                        text = curDateOfWek,
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Normal,
@@ -143,7 +151,7 @@ fun TimlineContent(
                             .padding(bottom = 8.dp)
                     )
                     Text(
-                        text = "Jan 2024",
+                        text = curMonAndYear,
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Normal,
@@ -170,26 +178,36 @@ fun TimlineContent(
 
         }
 
-        val mockDate = listOf(
-            Pair("Mon", "24"),
-            Pair("Tue", "25"),
-            Pair("Wed", "26"),
-            Pair("Thu", "27"),
-            Pair("Fri", "28"),
-            Pair("Sat", "29"),
-            Pair("Sun", "30")
-        )
+
+        var allDays = timelineUiState.allStartDays.distinctBy { SimpleDateFormat("dd").format(Date(it)) }
+        // puls five days alter the last day to alldays (file elements)
+         val lastDay = if (!allDays.isEmpty()) allDays.last() else Date().time
+        for (i in 1..5){
+            allDays = allDays.plus(lastDay + ((24 * i * 3600000).toLong()))
+        }
+        val allPairDay = allDays.map {
+            val dateOfMon = SimpleDateFormat("dd").format(Date(it))
+            val dateOfWek = SimpleDateFormat("EEE").format(Date(it))
+            Pair(dateOfWek, dateOfMon)
+        }
 
         var selectedDateIndex by remember {
-            mutableStateOf(mockDate.indexOf(Pair("Wed", "26")))
+            mutableStateOf(allPairDay.size - 5)
         }
+
+//        Log.d("slected date index", selectedDateIndex.toString())
+//        Log.d("slected date", curDayPair.toString())
+//        Log.d("all days", allPairDay.toString())
 
         DateSelectionRow(
             modifier = Modifier
                 .fillMaxWidth(),
-            onChose = { selectedDateIndex = mockDate.indexOf(it) },
+            onChose = {
+                selectedDateIndex = allPairDay.indexOf(it)
+                updateCurrentDay(Date(allDays[selectedDateIndex]))
+                      },
             selectedIndex = selectedDateIndex,
-            list = mockDate
+            list = allPairDay
         )
 
         Row(
@@ -234,9 +252,9 @@ fun TimlineContent(
 
 
         LazyColumn(content = {
-            items(timelineUiState.tripLists.size) { index ->
+            items(timelineUiState.tripByDay.size) { index ->
                 Trip(
-                    trip = timelineUiState.tripLists[index],
+                    trip = timelineUiState.tripByDay[index],
                     onClick = { /*TODO*/ }
                 )
             }

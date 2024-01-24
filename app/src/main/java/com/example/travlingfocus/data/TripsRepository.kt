@@ -13,4 +13,8 @@ interface TripsRepository {
     suspend fun deleteTrip(trip: Trip)
 
     suspend fun updateTrip(trip: Trip)
+
+    fun getAllStartTime(): Flow<List<Long>>
+
+    fun getTripInRange(startTime: Long, endTime: Long): Flow<List<Trip>>
 }
