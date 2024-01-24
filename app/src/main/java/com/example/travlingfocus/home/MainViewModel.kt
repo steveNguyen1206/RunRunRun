@@ -2,6 +2,7 @@ package com.example.travlingfocus.home
 
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -54,8 +55,33 @@ class MainViewModel @Inject constructor(
 }
 
 
-enum class ActivityTag {
-    friend, study, family, sport, work, other
+enum class ActivityTag(val color: Color) {
+    friend(Color(0xFFf90e5c)),
+    study(Color(0xFFed060a)),
+    family(Color(0xFFf7690b)),
+    sport(Color(0xFFf9c713)),
+    work(Color(0xFF6abd6a)),
+    other(Color(0xFF21aaff))
+}
+fun String.toActivityTag(): ActivityTag {
+    return when (this) {
+        "friend" -> ActivityTag.friend
+        "study" -> ActivityTag.study
+        "family" -> ActivityTag.family
+        "sport" -> ActivityTag.sport
+        "work" -> ActivityTag.work
+        else -> ActivityTag.other
+    }
+}
+fun ActivityTag.toActivityTagString(): String {
+    return when (this) {
+        ActivityTag.friend -> "friend"
+        ActivityTag.study -> "study"
+        ActivityTag.family -> "family"
+        ActivityTag.sport -> "sport"
+        ActivityTag.work -> "work"
+        else -> "other"
+    }
 }
 
 enum class Souvenir(val imageId: Int)
@@ -95,7 +121,6 @@ enum class Destinations (val imageId: Int, val place: String)
     SaPa(R.drawable.img_sapa, "Sa Pa"),
     MocChau(R.drawable.img_mocchau, "Mộc Châu"),
     PhanThiet(R.drawable.img_phanthiet, "Phan Thiết"),
-
 }
 
 

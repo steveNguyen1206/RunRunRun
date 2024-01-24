@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.travlingfocus.home.TripCreateViewModel
+import com.example.travlingfocus.rewardscreen.RewardViewModel
 import com.example.travlingfocus.timline.TimeLineViewModel
 
 object AppViewModelProvider {
@@ -47,7 +48,14 @@ object AppViewModelProvider {
             TimeLineViewModel(
                 travlingfocusApplication().container.tripsRepository
             )
-         }
+        }
+
+        initializer {
+            RewardViewModel(
+                travlingfocusApplication().container.tripsRepository
+            )
+
+        }
     }
 }
 

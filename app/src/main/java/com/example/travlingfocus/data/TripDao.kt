@@ -7,7 +7,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
+// Dao: Data Access Object
 @Dao
 interface TripDao {
     @Query("SELECT * from trips ORDER BY startTime ASC")
@@ -26,4 +28,16 @@ interface TripDao {
 
     @Delete
     suspend fun delete(trip: Trip)
+
+////    Get Total Duration with startTime and endTime in Range L -> R
+    @Query("SELECT * FROM trips WHERE userId == :userId AND startTime >= :L AND endTime <= :R ORDER BY endTime ASC")
+    suspend fun getAllTripsInRange(userId: Int = 0, L: Long = 0, R: Long = Date().time): List<Trip>
+//
+//
+    @Query("SELECT IFNULL(SUM(duration), 0) FROM trips WHERE userId == :userId AND startTime >= :L AND endTime <= :R")
+    suspend fun getTotalDurationInRange(userId: Int = 0, L: Long = 0, R: Long = Date().time): Float
+//
+////    Get destination with startTime and endTime in Range L -> R
+    @Query("SELECT * FROM trips WHERE userId == :userId AND completed == 1 AND startTime >= :L AND endTime <= :R ORDER BY endTime ASC")
+    suspend fun getCompleteDestinationInRange(userId: Int = 0, L: Long = 0, R: Long = Date().time): List<Trip>
 }

@@ -1,5 +1,6 @@
 package com.example.travlingfocus.rewardscreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +33,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,28 +47,28 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travlingfocus.AppViewModelProvider
 import com.example.travlingfocus.R
 import com.example.travlingfocus.composable.DisplaySpinner
 import com.example.travlingfocus.composable.MyTabBar
 import com.example.travlingfocus.composable.MyTabReward
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 
-enum class TimeType{
-    Day,  Month, Year, All, Week
-}
 
-@Preview(showBackground = true, backgroundColor = 0xFF81A684)
-@Composable
-fun RewardScreenPreview() {
-    RewardScreen(
-        viewModel = RewardViewModel(),
-    )
-}
+//@Preview(showBackground = true, backgroundColor = 0xFF81A684)
+//@Composable
+//fun RewardScreenPreview() {
+//    RewardScreen(
+//        viewModel = RewardViewModel(),
+//    )
+//}
 
 @Composable
 fun RewardScreen(
     modifier: Modifier = Modifier,
-    viewModel: RewardViewModel = hiltViewModel<RewardViewModel>(),
+    viewModel: RewardViewModel =  viewModel(factory = AppViewModelProvider.Factory),
     navigateUp: () -> Unit = {},
     canNavigateBack: Boolean = true,
 ) {
@@ -81,11 +83,10 @@ fun RewardScreen(
                     .fillMaxWidth(),
                 navigateUp = navigateUp,
                 canNavigateBack = canNavigateBack,
-                children = { MyTabReward(modifier = it, hours = viewModel.getTotalHours())}
+                children = { MyTabReward(modifier = it, hours = viewModel.totalDuration)}
             )
         },
     ){
-
         RewardContent(
             modifier = modifier.padding(it),
             viewModel = viewModel,
@@ -123,10 +124,7 @@ fun RewardSpinner(
     modifier: Modifier = Modifier,
     viewModel: RewardViewModel
 ) {
-    val options = remember(key1 = viewModel.timeOptions) {
-        viewModel.timeOptions
-    }
-
+    val coroutineScope = rememberCoroutineScope()
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -134,8 +132,11 @@ fun RewardSpinner(
     ) {
         DisplaySpinner(
             modifier = modifier,
-            options = options,
-            onOptionSelected = { viewModel.chooseOption(it) },
+            options = viewModel.options,
+            onOptionSelected =  {
+                coroutineScope.launch {
+                    viewModel.updateOption(it)
+                } },
             parent = { modifier, onClick ->
                 RewardSpinnerButton(
                     modifier = modifier,
@@ -171,7 +172,7 @@ fun RewardSpinnerButton(
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                text = viewModel.getTimeString(),
+                text = viewModel.timeOption,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold,
@@ -193,9 +194,9 @@ fun RewardSpinnerButton(
 @Composable
 fun RewardBoard(
     modifier: Modifier = Modifier,
-    viewModel: RewardViewModel = RewardViewModel()
+    viewModel: RewardViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ){
-    val places = viewModel.getPlaces()
+    val places = viewModel.destinations
     Box(
 //        contentAlignment = Alignment.BottomEnd,
     ) {
@@ -235,7 +236,7 @@ fun RewardBoard(
                             place = place,
                             pinColor = viewModel.getPinColor(index),
                         ) {
-                            viewModel.setSelectedPlaceIndex(index)
+//                            viewModel.setSelectedPlaceIndex(index)
                         }
                     }
                 }
@@ -258,7 +259,7 @@ fun RewardBoard(
 @Composable
 fun RewardGridItem(
     modifier: Modifier = Modifier,
-    place: Place,
+    place: Pair<Int, String>,
     pinColor: Color,
     onClick: () -> Unit)
 {
@@ -272,18 +273,20 @@ fun RewardGridItem(
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.End,
         ) {
+            Log.d("RewardScreen", "RewardGridItem: ${place}")
+            Log.d("RewardScreen", "RewardGridItem: ${painterResource(id =place.first)}")
+
             Image(
-                painter = painterResource(id = place.imageId),
+                painter = painterResource(id = place.first),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(),
-                //                .clip(RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.FillWidth,
             )
 
             Text(
                 //            text = if (place.name != "Next Place") place.name else "",
-                text = place.name,
+                text = place.second,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -361,13 +364,18 @@ fun RewardBottomSheetContent(
         Spacer(modifier = Modifier.height(16.dp))
 
 //        Example
-        MultipleBarChartPreview()
-//        MultipleBarChart(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(200.dp),
-//            viewModel = viewModel,
-//        )
+//        MultipleBarChartPreview()
+        MultipleBarChart(
+            modifier = Modifier
+                .fillMaxWidth(),
+            barChartListSize = viewModel.barChartListSize,
+            eachGroupBarSize = viewModel.eachGroupBarSize,
+            yStepSize = viewModel.yStepSize,
+            groupBarData = viewModel.groupBarData,
+            itemBarColors = viewModel.itemBarColors,
+            itemBarNames = viewModel.itemBarNames,
+            groupBarNames = viewModel.groupBarNames,
+        )
     }
 }
 
@@ -383,7 +391,7 @@ fun IconRewardBottomSheetButton(
     ) {
         IconButton(
             onClick = {
-                viewModel.openBottomSheet()
+                viewModel.openSheet()
             },
             modifier = Modifier
                 .wrapContentSize()
@@ -403,21 +411,21 @@ fun IconRewardBottomSheetButton(
             )
         }
 
-        if(viewModel.getSheetState().value) {
+        if(viewModel.sheetState) {
             RewardBottomSheet(
                 viewModel = viewModel,
                 onDismissRequest = {
-                    viewModel.closeBottomSheet()
+                    viewModel.closeSheet()
                 }
             )
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF81A684)
-@Composable
-fun RewardBottomSheetPreview(){
-//    val viewModel = hiltViewModel<RewardViewModel>()
-    val viewModel = RewardViewModel()
-    IconRewardBottomSheetButton(viewModel = viewModel)
-}
+//@Preview(showBackground = true, backgroundColor = 0xFF81A684)
+//@Composable
+//fun RewardBottomSheetPreview(){
+////    val viewModel = hiltViewModel<RewardViewModel>()
+//    val viewModel = RewardViewModel()
+//    IconRewardBottomSheetButton(viewModel = viewModel)
+//}

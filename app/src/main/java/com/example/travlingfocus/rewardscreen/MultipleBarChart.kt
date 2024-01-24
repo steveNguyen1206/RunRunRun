@@ -1,5 +1,6 @@
 package com.example.travlingfocus.rewardscreen
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,17 +44,23 @@ import co.yml.charts.ui.barchart.models.BarPlotData
 import co.yml.charts.ui.barchart.models.BarStyle
 import co.yml.charts.ui.barchart.models.GroupBar
 import co.yml.charts.ui.barchart.models.GroupBarChartData
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.max
 
 @Preview(showBackground = true)
 @Composable
 fun MultipleBarChartPreview(){
     val groupBarData = listOf(
-        listOf(10f, 20f, 30f, 40f, 50f),
-        listOf(60f, 50f, 40f, 30f, 20f),
-        listOf(30f, 40f, 50f, 60f, 70f),
-        listOf(40f, 50f, 60f, 70f, 80f),
-        listOf(50f, 60f, 70f, 80f, 90f),
+        listOf(0.1f, 0.2f, 0.3f, 0.4f, 0.5f),
+        listOf(0.1f, 0.2f, 0.3f, 0.4f, 0.5f),
+        listOf(0.1f, 0.2f, 0.3f, 0.4f, 0.5f),
+        listOf(0.1f, 0.2f, 0.3f, 0.4f, 0.5f),
+        listOf(0.1f, 0.2f, 0.3f, 0.4f, 0.5f),
+//        listOf(60f, 50f, 40f, 30f, 20f),
+//        listOf(30f, 40f, 50f, 60f, 70f),
+//        listOf(40f, 50f, 60f, 70f, 80f),
+//        listOf(50f, 60f, 70f, 80f, 90f),
 //        listOf(60f, 70f, 80f, 90f, 100f),
 //        listOf(70f, 80f, 90f, 100f, 110f),
 //        listOf(80f, 90f, 100f, 110f, 120f),
@@ -102,9 +109,18 @@ fun MultipleBarChart(
     groupBarNames: List<String>, // Name for each Group Bar Chart
     ){
 
+    Log.d("RewardViewModel", "MultipleBarChart: barChartListSize = $barChartListSize")
+    Log.d("RewardViewModel", "MultipleBarChart: eachGroupBarSize = $eachGroupBarSize")
+    Log.d("RewardViewModel", "MultipleBarChart: yStepSize = $yStepSize")
+    Log.d("RewardViewModel", "MultipleBarChart: groupBarData = $groupBarData")
+    Log.d("RewardViewModel", "MultipleBarChart: itemBarColors = $itemBarColors")
+    Log.d("RewardViewModel", "MultipleBarChart: itemBarNames = $itemBarNames")
+    Log.d("RewardViewModel", "MultipleBarChart: groupBarNames = $groupBarNames")
+
+
     var max_yValue = groupBarData.flatten().maxOrNull() ?: 0f
-    max_yValue = max(max_yValue, 10f)
-    max_yValue = (max_yValue / 10).toInt() * 10f + (if (max_yValue % 10 > 0) 10f else 0f)  // round up to the nearest 10
+//    max_yValue = max(max_yValue, 10f)
+//    max_yValue = (max_yValue / 10).toInt() * 10f + (if (max_yValue % 10 > 0) 10f else 0f)  // round up to the nearest 10
 
     val groupBarPlotData = BarPlotData(
         groupBarList =  getGroupBarChartData(groupBarData, groupBarNames),  // Generate Data for each Group
@@ -122,7 +138,8 @@ fun MultipleBarChart(
 
     val xAxisData = AxisData.Builder()
         .axisStepSize(40.dp)
-        .steps(groupBarData.size - 1)
+//        .steps(groupBarData.size - 1)
+        .steps(5)
         .bottomPadding(10.dp)
         .labelAndAxisLinePadding(20.dp)
         .startDrawPadding(12.dp )
@@ -136,7 +153,7 @@ fun MultipleBarChart(
         .steps(yStepSize)
         .labelAndAxisLinePadding(20.dp)
         .axisOffset(12.dp)
-        .labelData { index -> (index * (max_yValue / yStepSize)).toString() }
+        .labelData { index -> BigDecimal(index.toDouble() * (max_yValue / yStepSize)).setScale(2, RoundingMode.HALF_UP).toString() }
         .axisLineColor(MaterialTheme.colorScheme.onPrimary)
 //        .axisLabelColor(MaterialTheme.colorScheme.onPrimary)
         .axisLabelColor(MaterialTheme.colorScheme.onPrimary)
@@ -152,7 +169,7 @@ fun MultipleBarChart(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .background(Color(0xFFE6B9BD)),
@@ -184,7 +201,7 @@ fun MultipleBarChart(
                 .horizontalScroll(scrollState),
             horizontalArrangement = Arrangement.SpaceAround,
         ){
-            for (i in 0 until barChartListSize){
+            for (i in 0 until itemBarNames.size){
                 ItemDesciptor(
                     modifier = Modifier
                         .wrapContentSize(),
@@ -245,5 +262,6 @@ fun getGroupBarChartData(groupBarData: List<List<Float>>, groupBarName: List<Str
         groupBarPlotData.add(GroupBar(groupBarName[i] ?: i.toString(), barList))
     }
 
+    Log.d("RewardViewModel", "getGroupBarChartData: groupBarPlotData = $groupBarPlotData")
     return groupBarPlotData
 }

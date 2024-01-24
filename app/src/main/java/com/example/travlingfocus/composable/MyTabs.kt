@@ -179,7 +179,7 @@ fun MyTab(
 
 @Composable
 fun MyTabReward(
-    hours: Double,
+    hours: Float,
     modifier: Modifier = Modifier,
     onShareClick: () -> Unit = {},
 ) {
