@@ -307,7 +307,7 @@ fun RewardGridItem(
             Image(
                 painter = painterResource(R.drawable.ic_push_pin),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(pinColor, blendMode = BlendMode.ColorBurn),
+                colorFilter = ColorFilter.tint(pinColor),
             )
         }
     }
