@@ -39,6 +39,8 @@ data class TripUiState(
     val isEntryValid: Boolean = false,
 )
 
+//TripDetails: Use to Code
+// Trip:       Save to DB
 data class TripDetails (
     val id: Int = 0,
     val userId: Int = 0,

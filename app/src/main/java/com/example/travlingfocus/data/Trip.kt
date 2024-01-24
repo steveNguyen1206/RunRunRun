@@ -13,8 +13,8 @@ data class Trip(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val userId: Int = 0,
-    val destination: String,
-    val desResId: Int,
+    val destination: String,  // name
+    val desResId: Int,        // id to draw Image
     val completed: Boolean,
     val startTime: Long,
     val endTime: Long,
