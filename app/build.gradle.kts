@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.travlingfocus"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -66,6 +66,9 @@ android {
 }
 
 dependencies {
+//    YCharts
+//    implementation("co.yml:ycharts:1.1.0")
+    implementation("co.yml:ycharts:2.1.0")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -98,6 +101,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
 
     implementation(libs.coil.kt.compose)
     implementation(libs.coil.kt.gif)

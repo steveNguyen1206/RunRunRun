@@ -123,6 +123,7 @@ fun HomeTabBar(
                 it,
                 onTimerClick = onTimerClick,
                 onStopWatchClick = onStopWatchClick,
+                onMusicClick - {},
             )
         }
     )
