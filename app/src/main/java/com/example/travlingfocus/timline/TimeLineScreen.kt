@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travlingfocus.AppViewModelProvider
+import com.example.travlingfocus.Login.AuthViewModel
 import com.example.travlingfocus.R
 import com.example.travlingfocus.composable.DateSelectionRow
 import com.example.travlingfocus.composable.totalTime
@@ -67,6 +68,7 @@ import com.example.travlingfocus.home.TripDetails
 import com.example.travlingfocus.home.toTripDetails
 import com.example.travlingfocus.ui.theme.GrayTripContainer
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import kotlin.time.Duration.Companion.hours
 
@@ -74,9 +76,11 @@ import kotlin.time.Duration.Companion.hours
 fun TimeLineScreen(
     navigateUp: () -> Unit,
     canNavigateBack: Boolean,
+    authViewModel: AuthViewModel,
     viewModel: TimeLineViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val timelineUiState by viewModel.timelineUiState.collectAsState()
+    viewModel.initTripList(authViewModel.authUiState.value.userId)
     Surface (
         modifier = Modifier.windowInsetsPadding(
             WindowInsets.navigationBars.only(WindowInsetsSides.Start + WindowInsetsSides.End)
@@ -99,7 +103,7 @@ fun TimeLineScreen(
                 TimlineContent(
                     timelineUiState = timelineUiState,
                     modifier = Modifier.padding(it),
-                    updateCurrentDay = { viewModel.updateCurrentDay(it) }
+                    updateCurrentDay = { date -> viewModel.updateCurrentDay(date) }
                 )
             }
         )
@@ -116,10 +120,7 @@ fun TimlineContent(
     Column (
         modifier = modifier.fillMaxSize()
     ) {
-        val curDateOfMon = SimpleDateFormat("dd").format(timelineUiState.currentDay)
-        val curDateOfWek = SimpleDateFormat("EEE").format(timelineUiState.currentDay)
-        val curMonAndYear = SimpleDateFormat("MMM yyyy").format(timelineUiState.currentDay)
-        val curDayPair = Pair(curDateOfWek, curDateOfMon)
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -132,7 +133,7 @@ fun TimlineContent(
             ){
 
                 Text(
-                    text = curDateOfMon,
+                    text = SimpleDateFormat("dd").format(timelineUiState.currentDay),
                     fontSize = 48.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
@@ -144,7 +145,7 @@ fun TimlineContent(
                 ) {
 
                     Text(
-                        text = curDateOfWek,
+                        text = SimpleDateFormat("EEE").format(timelineUiState.currentDay),
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Normal,
@@ -152,7 +153,7 @@ fun TimlineContent(
                             .padding(bottom = 8.dp)
                     )
                     Text(
-                        text = curMonAndYear,
+                        text = SimpleDateFormat("MMM, YYYY").format(timelineUiState.currentDay),
                         fontSize = 20.sp,
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Normal,
@@ -180,21 +181,10 @@ fun TimlineContent(
         }
 
 
-        var allDays = timelineUiState.allStartDays.distinctBy { SimpleDateFormat("dd").format(Date(it)) }
-        // puls five days alter the last day to alldays (file elements)
-         val lastDay = if (!allDays.isEmpty()) allDays.last() else Date().time
-        for (i in 1..5){
-            allDays = allDays.plus(lastDay + ((24 * i * 3600000).toLong()))
-        }
-        val allPairDay = allDays.map {
-            val dateOfMon = SimpleDateFormat("dd").format(Date(it))
-            val dateOfWek = SimpleDateFormat("EEE").format(Date(it))
-            Pair(dateOfWek, dateOfMon)
-        }
+        var allDaysInLong = timelineUiState.allStartDays
+        var selectedDateIndex = timelineUiState.selectedIndex
+        var allDays = allDaysInLong.map{ Date(it) }
 
-        var selectedDateIndex by remember {
-            mutableStateOf(allPairDay.size - 5)
-        }
 
 //        Log.d("slected date index", selectedDateIndex.toString())
 //        Log.d("slected date", curDayPair.toString())
@@ -204,11 +194,11 @@ fun TimlineContent(
             modifier = Modifier
                 .fillMaxWidth(),
             onChose = {
-                selectedDateIndex = allPairDay.indexOf(it)
-                updateCurrentDay(Date(allDays[selectedDateIndex]))
+                selectedDateIndex = allDays.indexOf(it)
+                updateCurrentDay(allDays[selectedDateIndex])
                       },
             selectedIndex = selectedDateIndex,
-            list = allPairDay
+            list = allDays
         )
 
         Row(
@@ -256,12 +246,12 @@ fun TimlineContent(
         val selectedEditTrip = remember { mutableStateOf(TripDetails()) }
 
         LazyColumn(content = {
-            items(timelineUiState.tripByDay.size) { index ->
+            items(timelineUiState.tripList.size) { index ->
                 Trip(
-                    trip = timelineUiState.tripByDay[index],
+                    trip = timelineUiState.tripList[index],
                     onClick = {
                         openEditDialog.value = true
-                        selectedEditTrip.value = timelineUiState.tripByDay[index].toTripDetails()
+                        selectedEditTrip.value = timelineUiState.tripList[index].toTripDetails()
                     }
                 )
             }

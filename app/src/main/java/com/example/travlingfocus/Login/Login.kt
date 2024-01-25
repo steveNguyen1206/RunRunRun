@@ -61,12 +61,10 @@ import kotlinx.coroutines.plus
 
 @Composable
 fun LoginScreen(
-    navigatoHomeScreen: () -> Unit,
     modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    authViewModel: AuthViewModel
 ){
-    val authUiState = authViewModel.authUiState
-    if(authUiState.value.isLogined) navigatoHomeScreen()
+
 
     Surface (
         modifier = Modifier.windowInsetsPadding(
@@ -140,8 +138,8 @@ fun SignupContent(
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
-    var passwordVisibility:Boolean by remember { mutableStateOf(false) }
-    var confirmPasswordVisibility:Boolean by remember { mutableStateOf(false) }
+    var passwordVisibility:Boolean by rememberSaveable { mutableStateOf(false) }
+    var confirmPasswordVisibility:Boolean by rememberSaveable { mutableStateOf(false) }
     var yourName by rememberSaveable { mutableStateOf("") }
 
 

@@ -105,6 +105,8 @@ fun Timer(
     openBottomSheet : () -> Unit,
     triggerTimerFromOutSize: Int = 0,
     tripDetails: TripDetails,
+    updateCurrentTime: (Float) -> Unit = {},
+    updateEndTime: (Date) -> Unit = {},
     onTripValueChange: (TripDetails) -> Unit = {},
     onTripEnd: () -> Unit = {},
 ) {
@@ -286,7 +288,8 @@ fun Timer(
                                 onDragEnd = {
                                     oldPositionTime = currentTime
                                     viewModel.updateTimerValue(currentTime)
-                                    onTripValueChange(tripDetails.copy(duration = currentTime))
+//                                    onTripValueChange(tripDetails.copy(duration = currentTime))
+                                    updateCurrentTime(currentTime)
                                 }
                             )
                         }
@@ -455,7 +458,8 @@ fun Timer(
                     },
                     onConfirmation = {
                         openAlertDialog.value = false
-                        onTripValueChange(tripDetails.copy(endTime = Date()))
+//                        onTripValueChange(tripDetails.copy(endTime = Date()))
+                        updateEndTime(Date())
                         onTripEnd()
                         viewModel.updateTimerValue(DEFAULT_TIMER_VALUE)
                         currentTime = chosenTime

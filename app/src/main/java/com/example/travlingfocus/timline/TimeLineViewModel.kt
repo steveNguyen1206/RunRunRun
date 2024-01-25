@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
@@ -29,23 +30,35 @@ class TimeLineViewModel(tripsRepository: TripsRepository) : ViewModel() {
                 launch {
                     tripsRepository.getAllTripsStrem().collect { trips ->
                         _timelineUiState.value = _timelineUiState.value.copy(
-                            tripLists = trips,
-                            tripByDay = getTripByDay(_timelineUiState.value.currentDay, trips)
+                            allTripLists = trips,
                         )
-                    }
-                }
-                launch {
-                    tripsRepository.getAllStartTime().collect { startTimes ->
-                        _timelineUiState.value = _timelineUiState.value.copy(allStartDays = startTimes)
                     }
                 }
 
         }
     }
 
+
     fun updateCurrentDay (day: Date) {
         _timelineUiState.value = _timelineUiState.value.copy(
-            currentDay = day, tripByDay = getTripByDay(day, _timelineUiState.value.tripLists)
+            currentDay = day, tripList = getTripByDay(day, _timelineUiState.value.userTripList),
+            selectedIndex = _timelineUiState.value.allStartDays.indexOfFirst {
+                SimpleDateFormat("dd:MMM").format(Date(it)) == SimpleDateFormat("dd:MMM").format(day) }
+        )
+    }
+
+    fun initTripList(userId: Int) {
+        val userTripList = getTripByUserId(userId,_timelineUiState.value.allTripLists)
+        val tripList = getTripByDay(_timelineUiState.value.currentDay, userTripList)
+        var startDays = userTripList.map { it.startTime }.distinctBy { getStartOfDayMillis(Date(it)) }
+        val lastDay = if (startDays.isEmpty()) _timelineUiState.value.currentDay.time else startDays.last()
+        for (i in 1..5){
+            startDays = startDays.plus(lastDay + ((24 * i * 3600000).toLong()))
+        }
+        _timelineUiState.value = _timelineUiState.value.copy(
+            userTripList = userTripList,
+            allStartDays = startDays,
+            tripList = tripList,
         )
     }
 
@@ -56,11 +69,20 @@ class TimeLineViewModel(tripsRepository: TripsRepository) : ViewModel() {
 }
 
 data class TimelineUiState(
-    val tripLists: List<Trip> = listOf(),
+    val allTripLists: List<Trip> = listOf(),
     val currentDay: Date = Date(),
+    val selectedIndex: Int = 0,
+    val userId: Int = 0,
     val allStartDays: List<Long> = listOf(),
-    val tripByDay: List<Trip> = getTripByDay(currentDay, tripLists),
+    val userTripList: List<Trip> = listOf(),
+    val tripList: List<Trip> = listOf(),
 )
+
+fun getTripByUserId(userId: Int, tripLists: List<Trip>): List<Trip> {
+    return tripLists.filter { trip ->
+        trip.userId == userId
+    }
+}
 
 fun getTripByDay(currentDay : Date, tripLists: List<Trip>): List<Trip> {
     val startOfDay = getStartOfDayMillis(currentDay)

@@ -19,6 +19,22 @@ class TripCreateViewModel(private val tripsRepository: TripsRepository) : ViewMo
         tripUiState = TripUiState(tripDetails, isEntryValid(tripDetails))
     }
 
+    fun updateCurrentTime (time: Float) {
+        tripUiState = tripUiState.copy(
+            tripDetails = tripUiState.tripDetails.copy(
+                duration = time
+            )
+        )
+    }
+
+    fun updateEndTime (time: Date) {
+        tripUiState = tripUiState.copy(
+            tripDetails = tripUiState.tripDetails.copy(
+                endTime = time
+            )
+        )
+    }
+
     suspend fun saveTrip(userId: Int) {
         val trip = tripUiState.tripDetails.copy(userId = userId).toTrip()
 

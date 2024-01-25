@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.example.travlingfocus.data.UserRepository
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.internal.wait
+import javax.inject.Inject
 
-class AuthViewModel  (
+class AuthViewModel (
     private val userRepository: UserRepository
 ) : ViewModel()
 {
@@ -30,7 +32,9 @@ class AuthViewModel  (
                 Log.d("AuthViewModel", "login: user: ${it.toString()}")
                 if (it != null) {
                     if (it.password == password) {
+                        Log.d("AuthViewModel", "login: user: ${it.id}")
                         authUiState.value = authUiState.value.copy(
+
                             userId = it.id,
                             isLogined = true,
                         )

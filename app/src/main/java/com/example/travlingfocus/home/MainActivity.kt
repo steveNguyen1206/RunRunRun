@@ -43,6 +43,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.travlingfocus.AppViewModelProvider
 import com.example.travlingfocus.Login.AuthViewModel
+import com.example.travlingfocus.Login.LoginScreen
 import com.example.travlingfocus.navigation.RambleNavGraph
 import com.example.travlingfocus.navigation.Routes
 import com.example.travlingfocus.ui.theme.TravlingfocusTheme
@@ -82,7 +83,7 @@ fun MainScreen(
     navigateToScreenRoute: (String) -> Unit,
     widthSizeClass: WindowWidthSizeClass,
     mainViewModel: MainViewModel = hiltViewModel<MainViewModel>(),
-    authViewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    authViewModel: AuthViewModel
 )
 {
 // Layout Container
@@ -125,18 +126,15 @@ fun MainScreen(
                 }
             )
 
-//            val authUiState = authViewModel.authUiState
-//            if(authUiState.value.isLogined)
                 MainContent(
                     navigateToScreenRoute = navigateToScreenRoute,
                     modifier = Modifier.alpha(contentAlpha),
                     topPadding = contentTopPadding,
                     widthSize = widthSizeClass,
-                    viewModel = mainViewModel
+                    viewModel = mainViewModel,
+                    authViewModel = authViewModel,
+
                 )
-//            else {
-//                navigateToScreenRoute(Routes.Login.route)
-//            }
         }
 
     }
@@ -148,15 +146,22 @@ private fun MainContent(
     modifier: Modifier = Modifier,
     topPadding: Dp = 0.dp,
     widthSize: WindowWidthSizeClass,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    authViewModel: AuthViewModel,
 ) {
     Column(modifier = modifier) {
         Spacer(Modifier.padding(top = topPadding))
+        val authUiState = authViewModel.authUiState
+        if(authUiState.value.isLogined)
         Home(
             navigateToScreenRoute = navigateToScreenRoute,
             widthSize = widthSize,
             viewModel = viewModel,
-            modifier = modifier
+            modifier = modifier,
+            authViewModel = authViewModel
         )
+        else {
+            LoginScreen(authViewModel = authViewModel)
+        }
     }
 }

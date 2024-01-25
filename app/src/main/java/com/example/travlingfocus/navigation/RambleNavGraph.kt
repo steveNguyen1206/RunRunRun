@@ -4,9 +4,13 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.travlingfocus.AppViewModelProvider
+import com.example.travlingfocus.Login.AuthViewModel
 import com.example.travlingfocus.Login.LoginScreen
 import com.example.travlingfocus.home.MainScreen
 import com.example.travlingfocus.home.MainViewModel
@@ -18,13 +22,15 @@ fun RambleNavGraph (
     navController: NavHostController,
     widthSizeClass: WindowWidthSizeClass,
 ){
-    NavHost(navController = navController, startDestination = Routes.Login.route) {
+    val authViewModel :AuthViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    NavHost(navController = navController, startDestination = Routes.Home.route) {
         composable(Routes.Home.route) {
             MainScreen(
                 navigateToScreenRoute = {
                     navController.navigate(it)
                 },
-                widthSizeClass = widthSizeClass
+                widthSizeClass = widthSizeClass,
+                authViewModel = authViewModel,
             )
         }
 
@@ -32,6 +38,7 @@ fun RambleNavGraph (
             TimeLineScreen(
                 navigateUp = { navController.navigateUp() },
                 canNavigateBack = true,
+                authViewModel = authViewModel,
             )
         }
 
@@ -44,9 +51,7 @@ fun RambleNavGraph (
 
         composable(Routes.Login.route) {
             LoginScreen(
-                navigatoHomeScreen = {
-                    navController.navigate(Routes.Home.route)
-                }
+                authViewModel = authViewModel,
             )
         }
     }

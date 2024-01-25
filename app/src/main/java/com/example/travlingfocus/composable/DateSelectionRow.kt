@@ -28,12 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.travlingfocus.R
 import com.example.travlingfocus.ui.theme.GrayDivider
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun DateSelectionRow (
     modifier: Modifier = Modifier,
-    list: List<Pair<String, String>>,
-    onChose: (Pair<String, String>) -> Unit,
+    list: List<Date>,
+    onChose: (Date) -> Unit,
     selectedIndex: Int,
     fontSize: Int = 20,
     unSelectedBackground: Color = Color.Transparent,
@@ -69,7 +71,7 @@ fun DateSelectionRow (
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = time.first.get(0).toString(),
+                            text = SimpleDateFormat("EEE").format(time).first().toString(),
                             fontSize = (fontSize - 2).sp,
                             style = MaterialTheme.typography.bodySmall,
                             color = if (selected) MaterialTheme.colorScheme.onPrimary else Color.Black,
@@ -78,7 +80,7 @@ fun DateSelectionRow (
                         )
 
                         Text(
-                            text = time.second,
+                            text = SimpleDateFormat("dd").format(time),
                             fontSize = fontSize.sp,
                             style = MaterialTheme.typography.bodyMedium,
                             color = if (selected) MaterialTheme.colorScheme.onPrimary else Color.Black,

@@ -1,5 +1,6 @@
 package com.example.travlingfocus.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.travlingfocus.composable.Timer
 import com.example.travlingfocus.ui.theme.GreenLight
 import com.example.travlingfocus.ui.theme.PinkGray
@@ -35,10 +37,14 @@ fun TimerScreen (
     viewModel: MainViewModel,
     timerType: TimerType = TimerType.Timer,
     tripCreateViewModel: TripCreateViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    authViewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    authViewModel: AuthViewModel,
 ){
 //                Text(text = "Back Layer")
+    Log.d("Timer Screen", "user Id" + authViewModel.authUiState.value.userId, )
+
     val authUiState = authViewModel.authUiState
+    Log.d("Timer Screen", "user Id" + authUiState.value.userId,)
+
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
@@ -69,6 +75,12 @@ fun TimerScreen (
             coroutineScope.launch {
                 tripCreateViewModel.saveTrip(authUiState.value.userId)
             }
+        },
+        updateCurrentTime = {
+            tripCreateViewModel.updateCurrentTime(it)
+        },
+        updateEndTime = {
+            tripCreateViewModel.updateEndTime(it)
         }
     )
 
@@ -84,7 +96,8 @@ fun TimerScreen (
         ) {
             TravelBottomSheet(
                 modifier = Modifier
-                    .fillMaxSize().windowInsetsPadding(
+                    .fillMaxSize()
+                    .windowInsetsPadding(
                         WindowInsets.navigationBars.only(WindowInsetsSides.Start + WindowInsetsSides.End)
                     ),
                 viewModel = viewModel,

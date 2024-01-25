@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.travlingfocus.Login.AuthViewModel
 import com.example.travlingfocus.composable.MainDrawer
 import com.example.travlingfocus.composable.MyTab
 import com.example.travlingfocus.composable.MyTabBar
@@ -28,7 +29,8 @@ fun Home (
     navigateToScreenRoute: (String) -> Unit,
     widthSize: WindowWidthSizeClass,
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    authViewModel: AuthViewModel,
 )
 {
     val scaffoldState = rememberScaffoldState()
@@ -59,7 +61,8 @@ fun Home (
                     scaffoldState.drawerState.open()
                 }
             },
-            viewModel = viewModel
+            viewModel = viewModel,
+            authViewModel = authViewModel,
         )
     }
 }
@@ -75,7 +78,8 @@ fun HomeContent(
 //    onDateSelectionClicked: () -> Unit,
     openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    authViewModel: AuthViewModel
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -97,7 +101,8 @@ fun HomeContent(
         content = {
             TimerScreen(
                 modifier = Modifier.padding(it),
-                viewModel = viewModel
+                viewModel = viewModel,
+                authViewModel = authViewModel,
             )
 
         })
